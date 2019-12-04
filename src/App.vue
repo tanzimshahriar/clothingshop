@@ -6,7 +6,7 @@
         class="hidden-sm-and-up "
       ></v-app-bar-nav-icon>
       <v-toolbar-title class="hidden-sm-and-up">
-        <span class = "text-uppercase">{{this.$route.name}}</span>
+        <span class="text-uppercase">{{ this.$route.name }}</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items class="hidden-xs-only">
@@ -16,7 +16,7 @@
           color="black"
           v-for="item in menuItems"
           :key="item.title"
-          router:to="item.link"
+          :to="item.link"
         >
           <v-icon left dark>{{ item.icon }}</v-icon>
           {{ item.title }}
@@ -25,7 +25,11 @@
     </v-toolbar>
     <v-navigation-drawer absolute v-model="sideNav">
       <v-list>
-        <v-list-item v-for="item in menuItems" :key="item.title" :to="item.link">
+        <v-list-item
+          v-for="item in menuItems"
+          :key="item.title"
+          :to="item.link"
+        >
           <v-list-item-icon>
             <v-icon v-text="item.icon"></v-icon>
           </v-list-item-icon>

@@ -3,6 +3,7 @@ import VueRouter from "vue-router";
 import Home from "../components/Home.vue";
 import Login from "../components/User/Login.vue";
 import Signup from "../components/User/Signup.vue";
+import Logout from "../components/User/Logout.vue";
 import Profile from "../components/User/Profile.vue";
 import Cart from "../components/cart.vue";
 
@@ -36,7 +37,7 @@ const routes = [
   {
     path: "/logout",
     name: "logout",
-    component: Login
+    component: Logout
   },
   {
     path: "/signup",
@@ -47,7 +48,7 @@ const routes = [
     path: "/cart",
     name: "cart",
     component: Cart
-  },
+  }
 ];
 
 const router = new VueRouter({

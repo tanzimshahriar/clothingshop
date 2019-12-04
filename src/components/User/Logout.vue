@@ -1,11 +1,11 @@
 <template>
-  <div class="cart">
-    Cart Page
+  <div class="logout">
+    LOGOUT
   </div>
 </template>
 
 <script>
 export default {
-  name: "cart"
+  name: "logout"
 };
 </script>
