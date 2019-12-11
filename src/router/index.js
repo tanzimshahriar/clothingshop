@@ -3,9 +3,9 @@ import VueRouter from "vue-router";
 import Home from "../components/Home.vue";
 import Login from "../components/User/Login.vue";
 import Signup from "../components/User/Signup.vue";
-import Logout from "../components/User/Logout.vue";
 import Profile from "../components/User/Profile.vue";
 import Cart from "../components/cart.vue";
+import store from "../store/index";
 
 Vue.use(VueRouter);
 
@@ -32,17 +32,18 @@ const routes = [
   {
     path: "/login",
     name: "login",
-    component: Login
-  },
-  {
-    path: "/logout",
-    name: "logout",
-    component: Logout
+    component: Login,
+    meta: {
+      requiresLoggedOut: true
+    }
   },
   {
     path: "/signup",
     name: "signup",
-    component: Signup
+    component: Signup,
+    meta: {
+      requiresLoggedOut: true
+    }
   },
   {
     path: "/cart",
@@ -54,6 +55,21 @@ const routes = [
 const router = new VueRouter({
   mode: "history",
   routes
+});
+
+router.beforeEach((to, from, next) => {
+  //console.log(`navigating to ${to.name} from ${from.name}`);
+  if (to.matched.some(route => route.meta.requiresLoggedOut)) {
+    if (!store.getters.loggedIn) {
+      next();
+    } else {
+      next({
+        name: "home"
+      });
+    }
+  } else {
+    next();
+  }
 });
 
 export default router;
