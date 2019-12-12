@@ -12,13 +12,18 @@ export default new Vuex.Store({
       token: localStorage.getItem("JWT_TOKEN") || null,
       type: localStorage.getItem("ACCOUNT_TYPE") || null,
       email: "",
-      name: ""
+      name: "",
+      admin: false
     },
     snackbar: {
       visible: false,
       text: null,
       timeout: 5000,
       multiline: false
+    },
+    error: {
+      networkError: false,
+      errorMsg: ""
     }
   },
   getters: {
@@ -27,6 +32,9 @@ export default new Vuex.Store({
     },
     getCart(state) {
       return state.cart;
+    },
+    isAdmin(state) {
+      return state.user.admin;
     }
   },
   mutations,

@@ -1,4 +1,5 @@
 import axios from "axios";
+import router from "../router";
 export default {
   signup(context, payload) {
     return new Promise((resolve, reject) => {
@@ -29,6 +30,10 @@ export default {
             type: "local"
           };
           context.commit("saveUser", payload);
+          if(res.data.admin){
+            context.commit("setAdmin");
+            router.push("/admin");
+          }
           resolve(res);
         })
         .catch(err => {
@@ -59,6 +64,27 @@ export default {
         .then(res => {
           const token = res.data.token;
           context.commit("saveUser", { token, type: "google" });
+          resolve(res);
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
+  },
+  checkAdmin(context, token) {
+    return new Promise((resolve, reject) => {
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': token,
+      };
+      const url = "http://localhost:8080/checkuseradmin";
+      axios
+        .post(url,{}, {headers})
+        .then(res => {
+          if(res.data.result) {
+            context.commit("setAdmin");
+            router.push("/admin");
+          }
           resolve(res);
         })
         .catch(err => {

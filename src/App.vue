@@ -15,7 +15,7 @@
       </v-toolbar-items>
       <v-spacer></v-spacer>
       <v-toolbar-items class="hidden-xs-only">
-        <v-btn text small to="/" exact-active-class="active">
+        <v-btn text small to="/" exact-active-class="active" v-if="!admin">
           <v-icon left>mdi-home</v-icon>Home
         </v-btn>
         <v-btn
@@ -49,7 +49,7 @@
           <v-icon left dark>mdi-logout</v-icon>Logout
         </v-btn>
         <v-btn
-          v-if="loggedIn"
+          v-if="loggedIn && !admin"
           text
           small
           color="black"
@@ -58,14 +58,14 @@
         >
           <v-icon left dark>mdi-account-circle</v-icon>My Account
         </v-btn>
-        <v-btn text small color="black" to="/cart" exact-active-class="active">
+        <v-btn text small color="black" to="/cart" exact-active-class="active" v-if="!admin">
           <v-icon left dark>mdi-cart</v-icon>Cart
         </v-btn>
       </v-toolbar-items>
     </v-toolbar>
     <v-navigation-drawer absolute v-model="sideNav">
       <v-list>
-        <v-list-item to="/" exact-active-class="active">
+        <v-list-item to="/" exact-active-class="active" v-if="!admin">
           <v-list-item-icon>
             <v-icon>mdi-home</v-icon>
           </v-list-item-icon>
@@ -94,7 +94,7 @@
           <v-list-item-content>Logout</v-list-item-content>
         </v-list-item>
         <v-list-item
-          v-if="loggedIn"
+          v-if="loggedIn && !admin"
           to="/myaccount"
           exact-active-class="active"
         >
@@ -103,7 +103,7 @@
           </v-list-item-icon>
           <v-list-item-content>My Account</v-list-item-content>
         </v-list-item>
-        <v-list-item to="/cart" exact-active-class="active">
+        <v-list-item to="/cart" exact-active-class="active" v-if="!admin">
           <v-list-item-icon>
             <v-icon>mdi-cart</v-icon>
           </v-list-item-icon>
@@ -136,6 +136,12 @@ export default {
         fbLogout();
       }
       this.$store.commit("logout");
+
+      //If in private route redirect to home
+      if(this.$router.currentRoute.meta.requiresLoggedIn) {
+        this.$router.push("/");
+      }
+
       let payload = {
         text: "Logged out successfully",
         timeout: 5000
@@ -152,10 +158,19 @@ export default {
     loggedIn() {
       return this.$store.getters.loggedIn;
     },
+    admin() {
+      return this.$store.getters.isAdmin;
+    },
     activeMenuItems() {
       return this.menuItems.filter(function(u) {
         return u.show;
       });
+    }
+  },
+  mounted() {
+    console.log("mounted");
+    if(this.$store.getters.loggedIn){
+      this.$store.dispatch("checkAdmin", this.$store.state.user.token);
     }
   }
 };

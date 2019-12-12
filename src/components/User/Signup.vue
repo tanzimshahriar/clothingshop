@@ -113,7 +113,7 @@ export default {
         this.$store
           .dispatch("signup", postData)
           .then(res => {
-            this.$router.push("./");
+            this.$router.push("/");
             let payload = {
               text: "Signup Successful" + res.data,
               timeout: 5000

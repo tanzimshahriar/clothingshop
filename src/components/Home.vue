@@ -62,10 +62,6 @@ export default {
       }
     ]
   }),
-  mounted () {
-      console.log(this.$vuetify.breakpoint)
-  },
-
     computed: {
       cardHeight () {
         switch (this.$vuetify.breakpoint.name) {

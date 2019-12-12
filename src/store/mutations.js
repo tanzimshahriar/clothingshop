@@ -5,6 +5,9 @@ export default {
     state.user.token = payload.token;
     state.user.type = payload.type;
   },
+  setAdmin(state) {
+    state.user.admin = true;
+  },
   logout(state) {
     localStorage.removeItem("JWT_TOKEN");
     localStorage.removeItem("ACCOUNT_TYPE");

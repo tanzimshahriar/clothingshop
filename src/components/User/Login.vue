@@ -115,7 +115,7 @@ export default {
       this.$store
         .dispatch("login", postData)
         .then(res => {
-          this.$router.push("./");
+          this.$router.push("/");
           let payload = {
             text: "Welcome" + res.data.email,
             timeout: 5000
@@ -153,7 +153,7 @@ export default {
       this.$store
         .dispatch("fbLogin", postData)
         .then(res => {
-          this.$router.push("./");
+          this.$router.push("/");
           let payload = {
             text: "Welcome " + res.data.email,
             timeout: 5000
@@ -176,7 +176,7 @@ export default {
       this.$store
         .dispatch("googleLogin", postData)
         .then(res => {
-          this.$router.push("./");
+          this.$router.push("/");
           let payload = {
             text: "Welcome " + res.data.email,
             timeout: 5000

@@ -5,12 +5,12 @@ import Login from "../components/User/Login.vue";
 import Signup from "../components/User/Signup.vue";
 import Profile from "../components/User/Profile.vue";
 import Cart from "../components/cart.vue";
+import Admin from "../components/Admin/adminPanel.vue";
 import store from "../store/index";
 
 Vue.use(VueRouter);
 
-const routes = [
-  {
+const routes = [{
     path: "/",
     name: "home",
     component: Home
@@ -22,12 +22,15 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue")
+      import( /* webpackChunkName: "about" */ "../views/About.vue")
   },
   {
     path: "/myaccount",
     name: "myaccount",
-    component: Profile
+    component: Profile,
+    meta: {
+      requiresLoggedIn: true
+    }
   },
   {
     path: "/login",
@@ -49,6 +52,15 @@ const routes = [
     path: "/cart",
     name: "cart",
     component: Cart
+  },
+  {
+    path: "/admin",
+    name: "admin",
+    component: Admin,
+    meta: {
+      requiresLoggedIn: true,
+      requiresAdmin: true
+    }
   }
 ];
 
@@ -63,9 +75,28 @@ router.beforeEach((to, from, next) => {
     if (!store.getters.loggedIn) {
       next();
     } else {
+      //logged in users redirected to home when requiresLoggedOut=true
       next({
         name: "home"
       });
+    }
+  } else if (to.matched.some(route => route.meta.requiresLoggedIn)){
+    if (store.getters.loggedIn) {
+      if (to.matched.some(route => route.meta.requiresAdmin)){
+        if(store.getters.isAdmin){
+          next({
+            name: "admin"
+          });
+        } else {
+          next();
+        }
+      } else {
+        next();
+      }
+    } else {
+      next({
+        name: "home"
+      })
     }
   } else {
     next();
