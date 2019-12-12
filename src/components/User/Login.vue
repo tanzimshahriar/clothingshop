@@ -2,7 +2,7 @@
   <v-container fluid fill-height>
     <v-layout align-top justify-center>
       <v-flex xs12 sm8 md4>
-        <v-card max-width="344" height="100%" class="mx-auto">
+        <v-card max-width="344" min-height="570" height="100%" class="mx-auto">
           <v-card-title>Login Form</v-card-title>
           <v-card-text>
             <v-form>
@@ -34,24 +34,28 @@
             <v-btn @click="login" color="primary">Login</v-btn>
           </v-card-actions>
           <v-divider class="divider"></v-divider>
-          <v-card-text class="social-media-login" align="center">Or Login with Social Media</v-card-text>
-          <v-layout justify-center>
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on }">
-                <v-btn icon large target="_blank" v-on="on">
-                  <v-icon outline color="red">mdi-google</v-icon>
-                </v-btn>
-              </template>
-              <span>Login with google</span>
-            </v-tooltip>
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on }">
-                <v-btn @click="facebooklogin" icon large v-on="on">
-                  <v-icon outline color="blue darken-2">mdi-facebook-box</v-icon>
-                </v-btn>
-              </template>
-              <span>Login With Facebook</span>
-            </v-tooltip>
+          <v-card-text class="social-media-login" align="center"
+            >Or</v-card-text
+          >
+          <v-layout class="mt-2" column align-center>
+            <GoogleLogin
+              class="mb-2"
+              :params="params"
+              :onSuccess="onSuccessGoogleLogin"
+              :onFailure="onFailureGoogleLogin"
+              :renderParams="renderParams"
+              >Login
+            </GoogleLogin>
+            <v-btn
+              width="204"
+              class="white--text"
+              color="blue darken-2"
+              @click="facebooklogin"
+              large
+            >
+              <v-icon left outline color="white">mdi-facebook-box</v-icon>
+              <span class="fb-text">Login with Facebook</span>
+            </v-btn>
           </v-layout>
         </v-card>
       </v-flex>
@@ -62,11 +66,12 @@
 <script>
 // import facebookLogin from "./facebook/facebook-login";
 import { loadFbSdk, fbLogin } from "./facebook/helpers";
+import GoogleLogin from "vue-google-login";
 export default {
   name: "login",
-  // components: {
-  //   facebookLogin
-  // },
+  components: {
+    GoogleLogin
+  },
   data: () => ({
     email: "",
     password: "",
@@ -79,7 +84,16 @@ export default {
     faceImage: null,
     name: "",
     personalID: "",
-    FB: window.FB
+    FB: window.FB,
+    params: {
+      client_id:
+        "195083085254-5k27lmfqp0of11n8tjil5fbj7lbpv57t.apps.googleusercontent.com"
+    },
+    renderParams: {
+      width: 200,
+      height: 44,
+      longtitle: true
+    }
   }),
   methods: {
     login() {
@@ -103,7 +117,7 @@ export default {
         .then(res => {
           this.$router.push("./");
           let payload = {
-            text: "Welcome" + res.data,
+            text: "Welcome" + res.data.email,
             timeout: 5000
           };
           this.$store.commit("showSnackbar", payload);
@@ -132,42 +146,76 @@ export default {
         }
       });
     },
-    sendFbAccessTokenToApi(accessToken){
+    sendFbAccessTokenToApi(accessToken) {
       var postData = {
-        "access_token": accessToken
+        access_token: accessToken
       };
       this.$store
         .dispatch("fbLogin", postData)
         .then(res => {
           this.$router.push("./");
           let payload = {
-            text: "Welcome" + res.data,
+            text: "Welcome " + res.data.email,
             timeout: 5000
           };
           this.$store.commit("showSnackbar", payload);
         })
-        .catch(err => { // eslint-disable-line no-unused-vars
+        //eslint-disable-next-line
+        .catch(err => {
           let payload = {
-            text: "Login failed, please try Again",
+            text: "Login failed, please try again",
             timeout: 5000
           };
           this.$store.commit("showSnackbar", payload);
         });
+    },
+    onSuccessGoogleLogin(user) {
+      var postData = {
+        access_token: user.WE.Zi.access_token
+      };
+      this.$store
+        .dispatch("googleLogin", postData)
+        .then(res => {
+          this.$router.push("./");
+          let payload = {
+            text: "Welcome " + res.data.email,
+            timeout: 5000
+          };
+          this.$store.commit("showSnackbar", payload);
+        })
+        //eslint-disable-next-line
+        .catch(err => {
+          let payload = {
+            text: "Login failed, please try again successlogin()",
+            timeout: 5000
+          };
+          this.$store.commit("showSnackbar", payload);
+        });
+    },
+    onFailureGoogleLogin() {
+      let payload = {
+        text: "Login failed, please try again faillogin()",
+        timeout: 5000
+      };
+      this.$store.commit("showSnackbar", payload);
     }
   },
   mounted() {
     const fbappId = 2239772502981983;
     const fbversion = "v2.10";
-    loadFbSdk(fbappId, fbversion)
+    loadFbSdk(fbappId, fbversion);
   }
 };
 </script>
 
-<style>
+<style scoped>
 .social-media-login {
-  margin-top: 8px;
+  margin-top: 20px;
 }
 .divider {
   margin-top: 50px;
+}
+.fb-text {
+  text-transform: none !important;
 }
 </style>

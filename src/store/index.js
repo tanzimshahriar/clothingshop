@@ -11,8 +11,8 @@ export default new Vuex.Store({
     user: {
       token: localStorage.getItem("JWT_TOKEN") || null,
       type: localStorage.getItem("ACCOUNT_TYPE") || null,
-      email: '',
-      name: '',
+      email: "",
+      name: ""
     },
     snackbar: {
       visible: false,

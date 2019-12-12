@@ -111,19 +111,19 @@ export default {
           password: this.password
         };
         this.$store
-        .dispatch("signup", postData)
-        .then(res => {
-          this.$router.push("./");
-          let payload = {
-            text: "Signup Successful" + res.data,
-            timeout: 5000
-          };
-          this.$store.commit("showSnackbar", payload);
-        })
-        .catch(err => {
-          console.log(err);
-          this.emailerror = "User already Exists"; 
-        });
+          .dispatch("signup", postData)
+          .then(res => {
+            this.$router.push("./");
+            let payload = {
+              text: "Signup Successful" + res.data,
+              timeout: 5000
+            };
+            this.$store.commit("showSnackbar", payload);
+          })
+          .catch(err => {
+            console.log(err);
+            this.emailerror = "User already Exists";
+          });
       }
     }
   },
