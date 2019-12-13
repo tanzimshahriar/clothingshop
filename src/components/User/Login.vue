@@ -29,9 +29,11 @@
             </v-form>
           </v-card-text>
           <v-card-actions>
-            <v-btn text small rounded color="indigo">Forgot Password</v-btn>
+            <v-btn text small rounded color="blue darken-2"
+              >Forgot Password</v-btn
+            >
             <v-spacer />
-            <v-btn @click="login" color="primary">Login</v-btn>
+            <v-btn color="primary" elevation="3" @click="login">Login</v-btn>
           </v-card-actions>
           <v-divider class="divider"></v-divider>
           <v-card-text class="social-media-login" align="center"
@@ -117,7 +119,7 @@ export default {
         .then(res => {
           this.$router.push("/");
           let payload = {
-            text: "Welcome" + res.data.email,
+            text: "Welcome " + res.data.email,
             timeout: 5000
           };
           this.$store.commit("showSnackbar", payload);

@@ -30,7 +30,7 @@ export default {
             type: "local"
           };
           context.commit("saveUser", payload);
-          if(res.data.admin){
+          if (res.data.admin) {
             context.commit("setAdmin");
             router.push("/admin");
           }
@@ -74,14 +74,14 @@ export default {
   checkAdmin(context, token) {
     return new Promise((resolve, reject) => {
       const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': token,
+        "Content-Type": "application/json",
+        Authorization: token
       };
       const url = "http://localhost:8080/checkuseradmin";
       axios
-        .post(url,{}, {headers})
+        .post(url, {}, { headers })
         .then(res => {
-          if(res.data.result) {
+          if (res.data.result) {
             context.commit("setAdmin");
             router.push("/admin");
           }

@@ -13,6 +13,7 @@ export default {
     localStorage.removeItem("ACCOUNT_TYPE");
     state.user.token = null;
     state.user.type = null;
+    state.user.admin = false;
   },
   resetErrorMessage(state) {
     state.errorMessage = "";
