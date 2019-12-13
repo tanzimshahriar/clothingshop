@@ -1,7 +1,7 @@
 <template>
   <v-container class="px-0 mx-0 py-0 my-0" fluid fill-height>
-    <v-layout fill-height>
-      <v-flex row>
+    <v-layout fill-height no-gutters>
+      <v-flex row no-gutters>
         <v-row no-gutters class="mt-1">
           <v-col no-gutters class="grey lighten-4 py-2 px-2" align="center">
             <FilterComponent />

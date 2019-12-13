@@ -1,117 +1,95 @@
 <template>
   <v-app>
     <Snackbar />
-    <v-toolbar fluid dense :max-height="toolbarHeight" elevation="0">
+    <v-toolbar fluid dense elevation="3" max-height="48px">
       <v-app-bar-nav-icon @click.stop="sideNav = !sideNav" class="hidden-sm-and-up"></v-app-bar-nav-icon>
       <v-toolbar-title class="hidden-sm-and-up px-0 font-weight-light">
         <span class="text-uppercase">{{ this.$route.name }}</span>
       </v-toolbar-title>
       <v-toolbar-items class="hidden-xs-only">
-        <v-row
-          row
-          align-start
-          align="center"
-          overflow-y:auto
-          :height="toolbarHeight"
-          class="flex-nowrap"
-        >
+        <v-row row align-start align="center" overflow-y:auto class="flex-nowrap">
           <v-icon class="mx-2" color="black">mdi-aspect-ratio</v-icon>
-          <v-toolbar-title class="px-0 mx-0 py-0 my-0 font-weight-light" color="black">Clothing Shop</v-toolbar-title>
+          <v-toolbar-title class="font-weight-light" color="black">Clothing Shop</v-toolbar-title>
         </v-row>
       </v-toolbar-items>
       <v-spacer></v-spacer>
       <v-toolbar-items class="hidden-xs-only">
         <v-btn
-        elevation="1"
+          elevation="1"
           v-if="loggedIn && admin"
           text
           small
           color="dark"
           to="/admin"
-          :max-height="toolbarHeight"
           exact-active-class="active"
         >
           <v-icon left dark>mdi-view-dashboard-outline</v-icon>Dashboar
         </v-btn>
         <v-btn
-        elevation="1"
+          elevation="1"
           v-if="loggedIn && admin"
           text
           small
           color="dark"
           to="/admin/products"
-          :max-height="toolbarHeight"
           exact-active-class="active"
         >
           <v-icon left dark>mdi-format-list-bulleted</v-icon>Products
         </v-btn>
-        <v-btn
-        elevation="1"
-          text
-          small
-          to="/"
-          exact-active-class="active"
-          :max-height="toolbarHeight"
-          v-if="!admin"
-        >
+        <v-btn elevation="1" text small to="/" exact-active-class="active" v-if="!admin">
           <v-icon left>mdi-home</v-icon>Home
         </v-btn>
         <v-btn
-        elevation="1"
+          elevation="1"
           v-if="!loggedIn"
           text
           small
           color="dark"
           to="/login"
-          :max-height="toolbarHeight"
           exact-active-class="active"
         >
           <v-icon left dark>mdi-login</v-icon>Login
         </v-btn>
         <v-btn
-        elevation="1"
+          elevation="1"
           v-if="!loggedIn"
           text
           small
           color="dark"
           to="/signup"
-          :max-height="toolbarHeight"
           exact-active-class="active"
         >
           <v-icon left dark>mdi-account-plus</v-icon>Signup
         </v-btn>
         <v-btn
-        elevation="1"
+          elevation="1"
           v-if="loggedIn"
           text
           small
           color="dark"
           @click="logout"
-          :max-height="toolbarHeight"
           exact-active-class="active"
         >
           <v-icon left dark>mdi-logout</v-icon>Logout
         </v-btn>
         <v-btn
-        elevation="1"
+          elevation="1"
           v-if="loggedIn && !admin"
           text
           small
           color="dark"
           to="/myaccount"
-          :max-height="toolbarHeight"
           exact-active-class="active"
         >
           <v-icon left dark>mdi-account-circle</v-icon>My Account
         </v-btn>
         <v-btn
-        elevation="1"
+          elevation="1"
           text
           small
           color="dark"
           to="/cart"
           exact-active-class="active"
-          :max-height="toolbarHeight"
           v-if="!admin"
         >
           <v-icon left dark>mdi-cart</v-icon>Cart
@@ -226,22 +204,6 @@ export default {
       return this.menuItems.filter(function(u) {
         return u.show;
       });
-    },
-    toolbarHeight() {
-      switch (this.$vuetify.breakpoint.name) {
-        case "xs":
-          return 45;
-        case "sm":
-          return 45;
-        case "md":
-          return 39;
-        case "lg":
-          return 43;
-        case "xl":
-          return 50;
-        default:
-          return 35;
-      }
     },
     titleSize() {
       switch (this.$vuetify.breakpoint.name) {
