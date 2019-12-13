@@ -9,8 +9,8 @@
         v-bind:radio="true"
         @select="checkSizeClick"
       ></Dropdown>
-      <v-col align="center" cols="12" sm="3" md="3" xl="3" class="py-0">
-        <v-col class="px-0 mt-2 mb-0 mx-0 py-0 font-weight-bold">PRICE</v-col>
+      <v-col align="start" cols="12" sm="6" md="3" xl="3" class="py-0">
+        <v-col class="px-0 mt-2 mb-0 mx-8 py-0 font-weight-medium">PRICE BETWEEN</v-col>
         <v-range-slider
           v-model="range"
           thumb-label
@@ -80,7 +80,7 @@ export default {
     },
     sizeOptions: [
       {
-        title: "All Sizes",
+        title: "All",
         radio: false
       },
       {
@@ -101,9 +101,9 @@ export default {
       }
     ],
     min: 1,
-    max: 2999,
+    max: 2500,
     slider: 1,
-    range: [1, 2999]
+    range: [1, 2500]
   }),
   methods: {
     selectSort(item) {
@@ -111,7 +111,7 @@ export default {
       //call api to fetch sorted products
     },
     checkSizeClick(item) {
-      if (item.title == "All Sizes") {
+      if (item.title == "All") {
         if (item.radio) {
           this.sizeOptions.forEach(opti => {
             opti.radio = true;

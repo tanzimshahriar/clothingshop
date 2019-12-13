@@ -1,21 +1,27 @@
 <template>
-  <v-row no-gutters class="mt-1">
-    <v-col no-gutters class="grey lighten-4 py-2 px-2" align="center">
-      <FilterComponent/>
-    <v-flex no-gutters row align-self-center align-center justify-center class="py-3">
-      <v-card
-        v-for="product in products"
-        v-bind:key="product.id"
-        class="mt-2 mb-2 ml-2 mr-2"
-        :height="cardHeight"
-        :width="cardWidth"
-        elevation="1"
-      >
-        <v-card-title>{{ product.title }}</v-card-title>
-      </v-card>
-    </v-flex>
-    </v-col>
-  </v-row>
+  <v-container class="px-0 mx-0 py-0 my-0" fluid fill-height>
+    <v-layout fill-height>
+      <v-flex row>
+        <v-row no-gutters class="mt-1">
+          <v-col no-gutters class="grey lighten-4 py-2 px-2" align="center">
+            <FilterComponent />
+            <v-flex no-gutters row align-self-center align-center justify-center class="py-3">
+              <v-card
+                v-for="product in products"
+                v-bind:key="product.id"
+                class="mt-2 mb-2 ml-2 mr-2"
+                :height="cardHeight"
+                :width="cardWidth"
+                elevation="1"
+              >
+                <v-card-title>{{ product.title }}</v-card-title>
+              </v-card>
+            </v-flex>
+          </v-col>
+        </v-row>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
