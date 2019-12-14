@@ -1,9 +1,9 @@
 <template>
   <v-container fluid fill-height>
-    <v-layout align-top justify-center>
-      <v-flex xs12 sm8 md4>
-        <v-card max-width="344" min-height="570" height="100%" class="mx-auto">
-          <v-card-title>Login Form</v-card-title>
+    <v-layout column fill-height no-gutters align-center>
+      <v-flex row no-gutters>
+        <v-card :width="cardWidth" class="my-auto pb-12 pt-2">
+          <v-card-title class="font-weight-light">Login Form</v-card-title>
           <v-card-text>
             <v-form>
               <v-layout row px-2>
@@ -36,10 +36,10 @@
             <v-btn color="primary" elevation="3" @click="login">Login</v-btn>
           </v-card-actions>
           <v-divider class="divider"></v-divider>
-          <v-card-text class="social-media-login" align="center"
+          <v-card-text align="center"
             >Or</v-card-text
           >
-          <v-layout class="mt-2" column align-center>
+          <v-layout class="my-4" column align-center>
             <GoogleLogin
               class="mb-2"
               :params="params"
@@ -206,14 +206,29 @@ export default {
     const fbappId = 2239772502981983;
     const fbversion = "v2.10";
     loadFbSdk(fbappId, fbversion);
+  },
+  computed: {
+    cardWidth() {
+       switch (this.$vuetify.breakpoint.name) {
+        case "xs":
+          return 350;
+        case "sm":
+          return 350;
+        case "md":
+          return 350;
+        case "lg":
+          return 350;
+        case "xl":
+          return 400;
+        default:
+          return 350;
+      }
+    }
   }
 };
 </script>
 
 <style scoped>
-.social-media-login {
-  margin-top: 20px;
-}
 .divider {
   margin-top: 50px;
 }

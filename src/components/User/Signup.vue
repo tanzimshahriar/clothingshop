@@ -1,9 +1,9 @@
 <template>
   <v-container fluid fill-height>
-    <v-layout align-top justify-center>
-      <v-flex xs12 sm8 md4>
-        <v-card max-width="344" height="100%" class="mx-auto">
-          <v-card-title>Signup Form</v-card-title>
+    <v-layout column fill-height no-gutters align-center>
+      <v-flex row no-gutters>
+        <v-card :width="cardWidth" min-height="560" class="my-auto pb-12 pt-2">
+          <v-card-title class="font-weight-light">Signup Form</v-card-title>
           <v-card-text>
             <v-form>
               <v-layout row px-2>
@@ -160,6 +160,22 @@ export default {
         return "Password must be at least 8 characters";
       } else {
         return "";
+      }
+    },
+    cardWidth() {
+       switch (this.$vuetify.breakpoint.name) {
+        case "xs":
+          return 350;
+        case "sm":
+          return 350;
+        case "md":
+          return 350;
+        case "lg":
+          return 350;
+        case "xl":
+          return 400;
+        default:
+          return 350;
       }
     }
   }

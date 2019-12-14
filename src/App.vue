@@ -97,7 +97,7 @@
       </v-toolbar-items>
     </v-toolbar>
     <v-navigation-drawer absolute v-model="sideNav">
-      <v-list>
+      <v-list class="py-0">
         <v-list-item v-if="loggedIn & admin" to="/admin" exact-active-class="active">
           <v-list-item-icon>
             <v-icon>mdi-view-dashboard-outline</v-icon>
@@ -242,7 +242,7 @@ export default {
   }
   div {
     color: white;
-    font-weight: bold;
+    font-weight: 400;
   }
 }
 </style>
