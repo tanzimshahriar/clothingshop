@@ -1,98 +1,182 @@
 <template>
-  <v-container fill-height fluid>
-    <v-layout row align-start justify-center class="mx-3">
-      <v-flex row justify-center>
-        <Title title="Products"></Title>
-        <v-row justify="center">
-          <Dropdown 
-            :selectedItem="selectedSort" 
-            :items="sortOptions" 
-            @select="selectSort">
-          </Dropdown>
-        </v-row>
+  <v-container grey lighten-4 class="px-0 py-0 mx-0 my-0" fill-height fluid>
+    <v-layout no-gutters row>
+      <v-flex col no-gutters>
+        <v-col no-gutters class="mt-1">
+          <v-col no-gutters align="center" class="px-0 py-0">
+            <FilterComponent />
+            <v-row justify="end" class="pt-3" no-gutters>
+              <v-btn
+                v-if="!showProductPanel"
+                @click="addProduct"
+                class="mx-1"
+                x-small
+                dark
+                color="indigo"
+              >
+                <v-icon small left dark>mdi-plus</v-icon>Add Product
+              </v-btn>
+            </v-row>
+
+            <ProductPanel
+              v-if="showProductPanel"
+              :type="productPanelType"
+              :product="currentProduct"
+              @click="save"
+              @cancel="closeProductPanel"
+            />
+
+            <v-simple-table v-if="!showProductPanel" class="my-3 mx-2">
+              <template v-slot:default>
+                <thead>
+                  <tr>
+                    <th class="text-left">Name</th>
+                    <th class="text-left">Price</th>
+                    <th class="text-left">Sale</th>
+                    <th class="text-left">Images</th>
+                    <th class="text-left">Description</th>
+                    <th class="text-left">Sizes</th>
+                    <th class="text-left">Quantity</th>
+                    <th class="text-left">Orders</th>
+                    <th v-if="edit" class="text-left">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="item in products" :key="item.name">
+                    <td>
+                      <v-card-text>{{ item.name }}</v-card-text>
+                    </td>
+                    <td>
+                      <v-card-text>${{ item.price }}</v-card-text>
+                    </td>
+                    <td v-if="item.sale">{{ item.sale }}%</td>
+                    <td v-if="!item.sale">None</td>
+                    <td></td>
+                    <td>{{ item.description }}</td>
+                    <td>S,M,L</td>
+                    <td>10S,5M,0L</td>
+                    <td>23</td>
+                    <td>
+                      <v-row>
+                        <v-btn class="mx-1" x-small color="amber" @click="editProduct(item)">Edit</v-btn>
+                        <v-btn x-small color="red" @click="deleteProduct(item)">Delete</v-btn>
+                      </v-row>
+                    </td>
+                  </tr>
+                </tbody>
+              </template>
+            </v-simple-table>
+          </v-col>
+        </v-col>
       </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script>
-import Title from "../../views/CustomComponents/title";
-import Dropdown from "../../views/CustomComponents/Dropdown";
+import FilterComponent from "../FilterComponent";
+import ProductPanel from "./ProductPanel";
 export default {
   name: "Products",
   components: {
-    Title,
-    Dropdown
+    FilterComponent,
+    ProductPanel
   },
   data: () => ({
-    sortOptions: [
-      {
-        title: "Sort By Name",
-        icon: "mdi-sort-ascending"
-      },
-      {
-        title: "Sort By Name",
-        icon: "mdi-sort-descending"
-      },
-      {
-        title: "Sort By Price",
-        icon: "mdi-sort-ascending"
-      },
-      {
-        title: "Sort By Price",
-        icon: "mdi-sort-descending"
-      },
-      {
-        title: "Sort By Quantity",
-        icon: "mdi-sort-ascending"
-      },
-      {
-        title: "Sort By Quantity",
-        icon: "mdi-sort-descending"
-      }
-    ],
-    selectedSort: {
-      title: "Sort By Name",
-      icon: "mdi-sort-ascending"
-    }
+    showProductPanel: false,
+    productPanelType: "",
+    currentProduct: {},
+    edit: true,
+    products: []
   }),
+  mounted() {
+    this.updateProducts();
+  },
+  updated(){
+    this.updateProducts();
+  },
   methods: {
-      selectSort(item){
-          this.selectedSort = item;
-      }
+    updateProducts(){
+      this.$store
+      .dispatch("getProducts")
+      .then(res => {
+        console.log(res);
+        //show product added message with snackbar
+        this.products = res.data.products;
+        console.log(this.products);
+      })
+      .catch(err => {
+        console.log(err);
+        //show error with snackbar
+      });
+    },
+    selectSort(item) {
+      this.selectedSort = item;
+    },
+    addProduct() {
+      this.productPanelType = "add";
+      this.currentProduct = {
+        name: "",
+        description: "",
+        quantity: [
+          {
+            size: "xxl",
+            number: null
+          },
+          {
+            size: "xl",
+            number: null
+          },
+          {
+            size: "l",
+            number: null
+          },
+          {
+            size: "m",
+            number: null
+          },
+          {
+            size: "s",
+            number: null
+          }
+        ],
+        images: []
+      };
+      this.openProductPanel(this.currentProduct);
+    },
+    editProduct(item) {
+      this.productPanelType = "edit";
+      this.openProductPanel(item);
+    },
+    deleteProduct(item) {
+      //make a confirm dialog
+      //call api to delete product
+      console.log("To be deleted:");
+      console.log(item.name);
+    },
+    openProductPanel(item) {
+      this.showProductPanel = true;
+      this.currentProduct = item;
+    },
+    save() {
+      //reload table then close panel
+      this.closeProductPanel();
+    },
+    closeProductPanel() {
+      this.showProductPanel = false;
+      this.currentProduct = {};
+      this.productPanelType = "";
+    }
   },
   computed: {
-    buttonHeight() {
-      switch (this.$vuetify.breakpoint.name) {
-        case "xs":
-          return 35;
-        case "sm":
-          return 40;
-        case "md":
-          return 50;
-        case "lg":
-          return 60;
-        case "xl":
-          return 65;
-        default:
-          return 35;
-      }
+    editColor() {
+      return this.edit ? "amber" : "primary";
     },
-    buttonWidth() {
-      switch (this.$vuetify.breakpoint.name) {
-        case "xs":
-          return "50";
-        case "sm":
-          return "57";
-        case "md":
-          return "65";
-        case "lg":
-          return "100";
-        case "xl":
-          return "120";
-        default:
-          return "50";
-      }
+    editIcon() {
+      return this.edit ? "mdi-content-save-outline" : "mdi-pencil";
+    },
+    editName() {
+      return this.edit ? "Save" : "Edit";
     }
   }
 };

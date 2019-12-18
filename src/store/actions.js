@@ -30,10 +30,6 @@ export default {
             type: "local"
           };
           context.commit("saveUser", payload);
-          if (res.data.admin) {
-            context.commit("setAdmin");
-            router.push("/admin");
-          }
           resolve(res);
         })
         .catch(err => {
@@ -85,6 +81,37 @@ export default {
             context.commit("setAdmin");
             router.push("/admin");
           }
+          resolve(res);
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
+  },
+  addProduct(context, product) {
+    return new Promise((resolve, reject) => {
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: context.state.user.token
+      };
+      const url = "http://localhost:8080/addproduct";
+      axios
+        .post(url, product, { headers })
+        .then(res => {
+          //returns the response to the addProduct action call
+          resolve(res);
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
+  },
+  getProducts() {
+    return new Promise((resolve, reject) => {
+      const url = "http://localhost:8080/getproducts";
+      axios
+        .get(url)
+        .then(res => {
           resolve(res);
         })
         .catch(err => {

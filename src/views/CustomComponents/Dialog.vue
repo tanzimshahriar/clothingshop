@@ -1,6 +1,6 @@
 <template>
   <div class="text-xs-center">
-    <v-dialog v-model="this.show" width="500">
+    <v-dialog persistent v-model="this.show">
       <v-card>
         <v-card-title class="headline grey lighten-2" primary-title>{{
           this.title
@@ -56,16 +56,16 @@ export default {
       this.show = newVal;
     },
     title: function(newVal) {
-      this.show = newVal;
+      this.title = newVal;
     },
     description1: function(newVal) {
-      this.show = newVal;
+      this.description1 = newVal;
     },
     description2: function(newVal) {
-      this.show = newVal;
+      this.description2 = newVal;
     },
     buttonLabel: function(newVal) {
-      this.show = newVal;
+      this.buttonLabel = newVal;
     }
   },
   computed: {

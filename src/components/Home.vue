@@ -5,7 +5,14 @@
         <v-row no-gutters class="mt-1">
           <v-col no-gutters class="grey lighten-4 py-2 px-2" align="center">
             <FilterComponent />
-            <v-flex no-gutters row align-self-center align-center justify-center class="py-3">
+            <v-flex
+              no-gutters
+              row
+              align-self-center
+              align-center
+              justify-center
+              class="py-3"
+            >
               <v-card
                 v-for="product in products"
                 v-bind:key="product.id"
@@ -25,7 +32,7 @@
 </template>
 
 <script>
-import FilterComponent from "./Filter";
+import FilterComponent from "./FilterComponent";
 export default {
   name: "home",
   components: {

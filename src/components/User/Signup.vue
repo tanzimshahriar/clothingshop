@@ -13,6 +13,7 @@
                   v-model="email"
                   type="email"
                   :error-messages="emailerror"
+                  v-on:keyup.enter="signup"
                 />
               </v-layout>
               <v-layout row px-2>
@@ -26,6 +27,7 @@
                   :error-messages="passworderror"
                   loading
                   @click:append="showpass = !showpass"
+                  v-on:keyup.enter="signup"
                 >
                   <template v-slot:progress>
                     <v-progress-linear
@@ -48,6 +50,7 @@
                   loading
                   @click:append="showpassconfirm = !showpassconfirm"
                   :error-messages="confirmpassworderror"
+                  v-on:keyup.enter="signup"
                 >
                   <template v-slot:progress>
                     <v-progress-linear
@@ -115,7 +118,7 @@ export default {
           .then(res => {
             this.$router.push("/");
             let payload = {
-              text: "Signup Successful" + res.data,
+              text: "Signup Successful for " + res.data.email,
               timeout: 5000
             };
             this.$store.commit("showSnackbar", payload);
@@ -163,7 +166,7 @@ export default {
       }
     },
     cardWidth() {
-       switch (this.$vuetify.breakpoint.name) {
+      switch (this.$vuetify.breakpoint.name) {
         case "xs":
           return 350;
         case "sm":

@@ -13,6 +13,7 @@
                   v-model="email"
                   type="email"
                   :error-messages="emailerror"
+                  v-on:keyup.enter="login"
                 />
               </v-layout>
               <v-layout row px-2>
@@ -24,6 +25,7 @@
                   :type="showpass ? 'text' : 'password'"
                   :error-messages="passworderror"
                   @click:append="showpass = !showpass"
+                  v-on:keyup.enter="login"
                 />
               </v-layout>
             </v-form>
@@ -36,9 +38,7 @@
             <v-btn color="primary" elevation="3" @click="login">Login</v-btn>
           </v-card-actions>
           <v-divider class="divider"></v-divider>
-          <v-card-text align="center"
-            >Or</v-card-text
-          >
+          <v-card-text align="center">Or</v-card-text>
           <v-layout class="my-4" column align-center>
             <GoogleLogin
               class="mb-2"
@@ -123,6 +123,7 @@ export default {
             timeout: 5000
           };
           this.$store.commit("showSnackbar", payload);
+          this.$store.dispatch("checkAdmin", this.$store.state.user.token);
         })
         .catch(err => {
           if (
@@ -209,7 +210,7 @@ export default {
   },
   computed: {
     cardWidth() {
-       switch (this.$vuetify.breakpoint.name) {
+      switch (this.$vuetify.breakpoint.name) {
         case "xs":
           return 350;
         case "sm":
