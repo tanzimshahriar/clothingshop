@@ -25,7 +25,7 @@
         />
 
         <v-card-subtitle class="overline px-0 mx-0">Images</v-card-subtitle>
-        <v-card class="d-flex align-content-space-around flex-wrap px-0" flat tile>
+        <v-card  v-if="type=='add'" class="d-flex align-content-space-around flex-wrap px-0" flat tile>
           <v-card
             v-for="(n, index) in item.images"
             :key="index"
@@ -35,7 +35,7 @@
             width="100"
             height="120"
           >
-            <v-img v-if="n" contain width="100" height="100" :src="returnImage(n)">
+            <v-img contain width="100" height="100" :src="returnImage(n)">
               <v-btn fab color="red" x-small top right @click="deleteImage(index)">
                 <v-icon color="white">mdi-close</v-icon>
               </v-btn>
@@ -241,7 +241,7 @@ export default {
         : true;
     },
     returnImage(file) {
-      return file!==null? URL.createObjectURL(file) : null;
+      return URL.createObjectURL(file);
     }
   },
   watch: {

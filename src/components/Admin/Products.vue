@@ -4,20 +4,24 @@
       <v-flex col no-gutters>
         <v-col no-gutters>
           <v-col no-gutters align="center" class="px-0 py-0">
-            <FilterComponent v-if="!this.showProductPanel"/>
+            <FilterComponent v-if="!this.showProductPanel" />
             <v-row v-if="!showProductPanel" justify="end" class="pt-3" no-gutters>
-              <v-btn
-                @click="addProduct"
-                class="mx-1"
-                x-small
-                dark
-                color="indigo"
-              >
+              <v-btn @click="addProduct" class="mx-1" x-small dark color="indigo">
                 <v-icon small left dark>mdi-plus</v-icon>Add Product
               </v-btn>
             </v-row>
-
-            <ProductPanel class="product-panel"
+            <DeleteDialog
+              :show="showDeleteDialog"
+              title="Delete Item?"
+              description2="Are you sure you want to delete the item?"
+              description1="Once deleted the item can not be recovered"
+              buttonLabel="Confirm"
+              buttonLabel2="Cancel"
+              @click="confirmDelete"
+              @click2="cancelDelete"
+            />
+            <ProductPanel
+              class="product-panel"
               v-if="showProductPanel"
               :type="productPanelType"
               :product="currentProduct"
@@ -57,16 +61,8 @@
                     <td>23</td>
                     <td>
                       <v-row>
-                        <v-btn
-                          class="mx-1"
-                          x-small
-                          color="amber"
-                          @click="editProduct(item)"
-                          >Edit</v-btn
-                        >
-                        <v-btn x-small color="red" @click="deleteProduct(item)"
-                          >Delete</v-btn
-                        >
+                        <v-btn class="mx-1" x-small color="amber" @click="editProduct(item)">Edit</v-btn>
+                        <v-btn x-small color="red" @click="deleteProduct(item)">Delete</v-btn>
                       </v-row>
                     </td>
                   </tr>
@@ -83,17 +79,21 @@
 <script>
 import FilterComponent from "../FilterComponent";
 import ProductPanel from "./ProductPanel";
+import DeleteDialog from "../../views/CustomComponents/Dialog";
 export default {
   name: "Products",
   components: {
     FilterComponent,
-    ProductPanel
+    ProductPanel,
+    DeleteDialog
   },
   data: () => ({
     showProductPanel: false,
     productPanelType: "",
     currentProduct: {},
     edit: true,
+    showDeleteDialog: false,
+    itemToDelete: null,
     products: []
   }),
   mounted() {
@@ -156,10 +156,18 @@ export default {
       this.openProductPanel(item);
     },
     deleteProduct(item) {
-      //make a confirm dialog
+      this.showDeleteDialog = true;
+      this.itemToDelete = item;
+    },
+    confirmDelete() {
       //call api to delete product
+      //on success close the dialog
       console.log("To be deleted:");
-      console.log(item.name);
+      console.log(this.itemToDelete.name);
+      this.showDeleteDialog = false;
+    },
+    cancelDelete() {
+      this.showDeleteDialog = false;
     },
     openProductPanel(item) {
       this.showProductPanel = true;

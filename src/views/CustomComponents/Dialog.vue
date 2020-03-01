@@ -15,6 +15,9 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
+          <v-btn v-if="this.buttonLabel2" color="primary" text @click="btnClicked2">{{
+            this.buttonLabel2
+          }}</v-btn>
           <v-btn color="primary" text @click="btnClicked">{{
             this.buttonLabel
           }}</v-btn>
@@ -44,11 +47,17 @@ export default {
     buttonLabel: {
       type: String,
       required: true
+    },
+    buttonLabel2: {
+      type: String
     }
   },
   methods: {
     btnClicked() {
       this.$emit("click");
+    },
+    btnClicked2() {
+      this.$emit("click2");
     }
   },
   watch: {
@@ -66,6 +75,9 @@ export default {
     },
     buttonLabel: function(newVal) {
       this.buttonLabel = newVal;
+    },
+    buttonLabel2: function(newVal) {
+      this.buttonLabel2 = newVal;
     }
   },
   computed: {
