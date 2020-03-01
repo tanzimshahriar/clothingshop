@@ -44,7 +44,10 @@ export default {
         .post(url, payload)
         .then(res => {
           const token = res.data.token;
-          context.commit("saveUser", { token, type: "facebook" });
+          context.commit("saveUser", {
+            token,
+            type: "facebook"
+          });
           resolve(res);
         })
         .catch(err => {
@@ -59,7 +62,10 @@ export default {
         .post(url, payload)
         .then(res => {
           const token = res.data.token;
-          context.commit("saveUser", { token, type: "google" });
+          context.commit("saveUser", {
+            token,
+            type: "google"
+          });
           resolve(res);
         })
         .catch(err => {
@@ -75,7 +81,9 @@ export default {
       };
       const url = "http://localhost:8080/checkuseradmin";
       axios
-        .post(url, {}, { headers })
+        .post(url, {}, {
+          headers
+        })
         .then(res => {
           if (res.data.result) {
             context.commit("setAdmin");
@@ -88,15 +96,19 @@ export default {
         });
     });
   },
-  addProduct(context, product) {
+  addProduct(context, data) {
     return new Promise((resolve, reject) => {
       const headers = {
-        "Content-Type": "application/json",
-        Authorization: context.state.user.token
+        'Content-Type': 'multipart/form-data',
+        'Authorization': context.state.user.token
       };
+
+      console.log(data);
       const url = "http://localhost:8080/addproduct";
       axios
-        .post(url, product, { headers })
+        .post(url, data, {
+          headers
+        })
         .then(res => {
           //returns the response to the addProduct action call
           resolve(res);

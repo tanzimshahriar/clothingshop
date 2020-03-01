@@ -1,10 +1,12 @@
 <template>
-  <v-card>
-    <v-layout no-gutters fill-height align-center justify-start>
+  <v-card class="px-0 py-0 mx-0 my-0">
+    <v-layout no-gutters fill-height align-center justify-start class="px-0 py-0 mx-0 my-0">
       <v-flex no-gutters column :class="flexClass">
         <v-row justify="center" class="px-0 py-0 mx-0 my-0">
           <v-card-title class="font-weight-light" primary-title>
-            {{ header }}
+            {{
+            header
+            }}
           </v-card-title>
         </v-row>
         <v-card-subtitle class="overline px-0 mx-0">Details</v-card-subtitle>
@@ -23,22 +25,18 @@
         />
 
         <v-card-subtitle class="overline px-0 mx-0">Images</v-card-subtitle>
-        <v-card
-          class="d-flex align-content-space-around flex-wrap px-0"
-          flat
-          tile
-        >
+        <v-card class="d-flex align-content-space-around flex-wrap px-0" flat tile>
           <v-card
-            v-for="n in images"
-            :key="n.name"
+            v-for="(n, index) in item.images"
+            :key="index"
             class="pr-4"
             tile
             flat
             width="100"
             height="120"
           >
-            <v-img v-if="n" contain width="100" height="100" :src="n">
-              <v-btn fab color="red" x-small top right @click="deleteImage(n)">
+            <v-img v-if="n" contain width="100" height="100" :src="returnImage(n)">
+              <v-btn fab color="red" x-small top right @click="deleteImage(index)">
                 <v-icon color="white">mdi-close</v-icon>
               </v-btn>
             </v-img>
@@ -52,14 +50,12 @@
         <v-row
           class="mx-0 my-0 px-0 align-self-start font-weight-light red--text"
           v-if="this.imageError && this.imageError != ''"
-          >{{ this.imageError }}</v-row
-        >
+        >{{ this.imageError }}</v-row>
         <v-row class="mx-0 my-0">
           <v-card-subtitle
             v-if="this.fileError && this.fileError !== ''"
             class="font-weight-light mx-0 my-0 py-0 px-0 red--text text--lighten-1"
-            >{{ this.fileError }}</v-card-subtitle
-          >
+          >{{ this.fileError }}</v-card-subtitle>
           <v-spacer></v-spacer>
         </v-row>
         <input
@@ -86,13 +82,7 @@
             />
           </v-card>
           <v-card class="pr-4" flat max-width="200">
-            <v-text-field
-              dense
-              type="number"
-              suffix="%"
-              v-model="item.sale"
-              step="any"
-            >
+            <v-text-field dense type="number" suffix="%" v-model="item.sale" step="any">
               <template v-slot:label>
                 <div>
                   Sale
@@ -105,26 +95,9 @@
 
         <v-card-subtitle class="overline">Quantity and Size</v-card-subtitle>
 
-        <v-card
-          class="d-flex align-content-space-around flex-wrap px-0"
-          flat
-          tile
-        >
-          <v-card
-            v-for="n in item.quantity"
-            :key="n.size"
-            class="pr-4"
-            tile
-            flat
-            max-width="200"
-          >
-            <v-text-field
-              dense
-              type="number"
-              step="any"
-              min="0"
-              v-model="n.number"
-            >
+        <v-card class="d-flex align-content-space-around flex-wrap px-0" flat tile>
+          <v-card v-for="n in item.quantity" :key="n.size" class="pr-4" tile flat max-width="200">
+            <v-text-field dense type="number" step="any" min="0" v-model="n.number">
               <template v-slot:label>
                 <div>
                   Quantity
@@ -161,8 +134,7 @@ export default {
     nameError: "",
     descriptionError: "",
     priceError: "",
-    imageError: "",
-    images: []
+    imageError: ""
   }),
   methods: {
     btnClicked() {
@@ -181,13 +153,12 @@ export default {
       } else {
         this.priceError = "";
       }
-      if (!this.images || this.images.length == 0) {
+      if (!this.item.images || this.item.images.length == 0) {
         this.imageError = "Add at least one image";
       } else {
         this.imageError = "";
       }
       if (this.hasErrors()) {
-        console.log("hasErrors");
         return;
       }
       this.saveProduct();
@@ -195,20 +166,35 @@ export default {
     cancel() {
       this.$emit("cancel");
     },
-    deleteImage(img) {
-      var index = -1;
-      for (var i = 0; i < this.images.length; i++) {
-        if (this.images[i] == img) {
-          index = i;
-        }
-      }
-      this.images.splice(index, 1);
+    deleteImage(index) {
+      this.item.images.splice(index, 1);
     },
 
     saveProduct() {
+      const item = this.item;
       if (this.type == "add") {
+        const data = new FormData();
+
+        data.append("name", item.name);
+        data.append("description", item.description);
+        data.append("price", item.price);
+        item.sale ? data.append("sale", item.sale) : null;
+
+        Object.keys(item.quantity).forEach(function(key) {
+          var quantity = Object.values(item.quantity)[key];
+          data.append(
+            "size:" + quantity.size,
+            quantity.number ? quantity.number : 0
+          );
+        });
+
+        Object.keys(item.images).forEach(function(key) {
+          var image = Object.values(item.images)[key];
+          data.append("image:" + key, image);
+        });
+
         this.$store
-          .dispatch("addProduct", this.item)
+          .dispatch("addProduct", data)
           .then(res => {
             //show product added message with snackbar
             console.log(res);
@@ -239,10 +225,10 @@ export default {
           return;
         } else {
           this.fileError = "";
-          images.push(URL.createObjectURL(files[i]));
+          images.push(files[i]);
         }
       }
-      this.images = this.images.concat(images);
+      this.item.images = this.item.images.concat(images);
       this.$refs.inputUpload.value = "";
     },
     hasErrors() {
@@ -253,6 +239,9 @@ export default {
         this.fileError == ""
         ? false
         : true;
+    },
+    returnImage(file) {
+      return file!==null? URL.createObjectURL(file) : null;
     }
   },
   watch: {

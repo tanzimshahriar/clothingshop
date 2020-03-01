@@ -2,12 +2,11 @@
   <v-container grey lighten-4 class="px-0 py-0 mx-0 my-0" fill-height fluid>
     <v-layout no-gutters row>
       <v-flex col no-gutters>
-        <v-col no-gutters class="mt-1">
+        <v-col no-gutters>
           <v-col no-gutters align="center" class="px-0 py-0">
-            <FilterComponent />
-            <v-row justify="end" class="pt-3" no-gutters>
+            <FilterComponent v-if="!this.showProductPanel"/>
+            <v-row v-if="!showProductPanel" justify="end" class="pt-3" no-gutters>
               <v-btn
-                v-if="!showProductPanel"
                 @click="addProduct"
                 class="mx-1"
                 x-small
@@ -18,7 +17,7 @@
               </v-btn>
             </v-row>
 
-            <ProductPanel
+            <ProductPanel class="product-panel"
               v-if="showProductPanel"
               :type="productPanelType"
               :product="currentProduct"
@@ -58,8 +57,16 @@
                     <td>23</td>
                     <td>
                       <v-row>
-                        <v-btn class="mx-1" x-small color="amber" @click="editProduct(item)">Edit</v-btn>
-                        <v-btn x-small color="red" @click="deleteProduct(item)">Delete</v-btn>
+                        <v-btn
+                          class="mx-1"
+                          x-small
+                          color="amber"
+                          @click="editProduct(item)"
+                          >Edit</v-btn
+                        >
+                        <v-btn x-small color="red" @click="deleteProduct(item)"
+                          >Delete</v-btn
+                        >
                       </v-row>
                     </td>
                   </tr>
@@ -92,23 +99,23 @@ export default {
   mounted() {
     this.updateProducts();
   },
-  updated(){
+  updated() {
     this.updateProducts();
   },
   methods: {
-    updateProducts(){
+    updateProducts() {
       this.$store
-      .dispatch("getProducts")
-      .then(res => {
-        console.log(res);
-        //show product added message with snackbar
-        this.products = res.data.products;
-        console.log(this.products);
-      })
-      .catch(err => {
-        console.log(err);
-        //show error with snackbar
-      });
+        .dispatch("getProducts")
+        .then(res => {
+          console.log(res);
+          //show product added message with snackbar
+          this.products = res.data.products;
+          console.log(this.products);
+        })
+        .catch(err => {
+          console.log(err);
+          //show error with snackbar
+        });
     },
     selectSort(item) {
       this.selectedSort = item;
