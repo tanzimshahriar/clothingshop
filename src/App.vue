@@ -85,7 +85,7 @@
           text
           small
           color="dark"
-          @click="logout"
+          @click="confirmLogout"
           exact-active-class="active"
         >
           <v-icon left dark>mdi-logout</v-icon>Logout
@@ -189,6 +189,15 @@
       <v-container class="fill-height px-0 py-0 px-0 py-0" fluid>
         <router-view></router-view>
       </v-container>
+      <Dialog
+        :show="showConfirmLogout"
+        title="Logout?"
+        description1="Are you sure you want to logout?"
+        buttonLabel="Confirm"
+        buttonLabel2="Cancel"
+        @click="logout"
+        @click2="cancelLogout"
+    />
     </v-content>
     <FooterComponent v-if="!admin" />
   </v-app>
@@ -196,20 +205,28 @@
 <script>
 import FooterComponent from "./views/Footer";
 import Snackbar from "./views/Snackbar";
+import Dialog from "./views/CustomComponents/Dialog";
 import { fbLogout } from "./components/User/facebook/helpers";
 
 export default {
   components: {
     FooterComponent,
-    Snackbar
+    Snackbar,
+    Dialog
   },
   methods: {
+    confirmLogout(){
+      this.showConfirmLogout = true;
+    },
+    cancelLogout(){
+      this.showConfirmLogout = false;
+    },
     logout() {
       if (this.$store.state.user.type == "facebook") {
         fbLogout();
       }
+      this.showConfirmLogout = false;
       this.$store.commit("logout");
-
       //If in private route redirect to home
       if (this.$router.currentRoute.meta.requiresLoggedIn) {
         this.$router.push("/");
@@ -224,7 +241,8 @@ export default {
   },
   data() {
     return {
-      sideNav: false
+      sideNav: false,
+      showConfirmLogout: false
     };
   },
   computed: {

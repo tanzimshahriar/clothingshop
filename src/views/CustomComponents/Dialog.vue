@@ -1,6 +1,6 @@
 <template>
   <div class="text-xs-center">
-    <v-dialog persistent v-model="this.show">
+    <v-dialog persistent v-model="this.show" width="unset">
       <v-card>
         <v-card-title class="headline grey lighten-2" primary-title>{{
           this.title
@@ -15,10 +15,10 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn v-if="this.buttonLabel2" color="primary" text @click="btnClicked2">{{
+          <v-btn small v-if="this.buttonLabel2" color="primary" text @click="btnClicked2">{{
             this.buttonLabel2
           }}</v-btn>
-          <v-btn color="primary" text @click="btnClicked">{{
+          <v-btn small color="primary" text @click="btnClicked">{{
             this.buttonLabel
           }}</v-btn>
         </v-card-actions>

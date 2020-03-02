@@ -17,8 +17,8 @@
               description1="Once deleted the item can not be recovered"
               buttonLabel="Confirm"
               buttonLabel2="Cancel"
-              @click="confirmDelete"
-              @click2="cancelDelete"
+              @click = "confirmDelete"
+              @click2 = "cancelDelete"
             />
             <ProductPanel
               class="product-panel"
@@ -58,7 +58,7 @@
                     <td>{{ item.description }}</td>
                     <td>S,M,L</td>
                     <td>10S,5M,0L</td>
-                    <td>23</td>
+                    <td>{{item.orders}}</td>
                     <td>
                       <v-row>
                         <v-btn class="mx-1" x-small color="amber" @click="editProduct(item)">Edit</v-btn>
@@ -78,6 +78,7 @@
 
 <script>
 import FilterComponent from "../FilterComponent";
+import axios from "axios";
 import ProductPanel from "./ProductPanel";
 import DeleteDialog from "../../views/CustomComponents/Dialog";
 export default {
@@ -107,10 +108,8 @@ export default {
       this.$store
         .dispatch("getProducts")
         .then(res => {
-          console.log(res);
           //show product added message with snackbar
           this.products = res.data.products;
-          console.log(this.products);
         })
         .catch(err => {
           console.log(err);
@@ -161,6 +160,26 @@ export default {
     },
     confirmDelete() {
       //call api to delete product
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': this.$store.state.user.token
+      };
+      var payload = {
+        name: this.itemToDelete.name,
+        price: this.itemToDelete.price,
+        description: this.itemToDelete.description
+      }
+      const url = "http://localhost:8080/deleteproduct";
+      axios
+        .post(url, payload, {headers})
+        .then(res => {
+          console.log(res);
+          //show snackbar that item has been deleted
+        })
+        .catch(err => {
+          console.log(err);
+          //show sncakbar that item hasnt been deleted
+        });
       //on success close the dialog
       console.log("To be deleted:");
       console.log(this.itemToDelete.name);
@@ -168,6 +187,7 @@ export default {
     },
     cancelDelete() {
       this.showDeleteDialog = false;
+      this.itemToDelete = null;
     },
     openProductPanel(item) {
       this.showProductPanel = true;
