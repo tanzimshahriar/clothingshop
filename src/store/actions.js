@@ -81,9 +81,13 @@ export default {
       };
       const url = "http://localhost:8080/checkuseradmin";
       axios
-        .post(url, {}, {
-          headers
-        })
+        .post(
+          url,
+          {},
+          {
+            headers
+          }
+        )
         .then(res => {
           if (res.data.result) {
             context.commit("setAdmin");
@@ -99,10 +103,13 @@ export default {
   addProduct(context, data) {
     return new Promise((resolve, reject) => {
       const headers = {
-        'Content-Type': 'multipart/form-data',
-        'Authorization': context.state.user.token
+        "Content-Type": "multipart/form-data",
+        Authorization: context.state.user.token
       };
-      var url = data.numberOfImages>1? "http://localhost:8080/addproductmultipleimages" : "http://localhost:8080/addproductsingleimage";
+      var url =
+        data.numberOfImages > 1
+          ? "http://localhost:8080/addproductmultipleimages"
+          : "http://localhost:8080/addproductsingleimage";
       axios
         .post(url, data.formdata, {
           headers

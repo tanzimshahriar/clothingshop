@@ -1,12 +1,16 @@
 <template>
   <v-card class="px-0 py-0 mx-0 my-0">
-    <v-layout no-gutters fill-height align-center justify-start class="px-0 py-0 mx-0 my-0">
+    <v-layout
+      no-gutters
+      fill-height
+      align-center
+      justify-start
+      class="px-0 py-0 mx-0 my-0"
+    >
       <v-flex no-gutters column :class="flexClass">
         <v-row justify="center" class="px-0 py-0 mx-0 my-0">
           <v-card-title class="font-weight-light" primary-title>
-            {{
-            header
-            }}
+            {{ header }}
           </v-card-title>
         </v-row>
         <v-card-subtitle class="overline px-0 mx-0">Details</v-card-subtitle>
@@ -25,7 +29,12 @@
         />
 
         <v-card-subtitle class="overline px-0 mx-0">Images</v-card-subtitle>
-        <v-card  v-if="type=='add'" class="d-flex align-content-space-around flex-wrap px-0" flat tile>
+        <v-card
+          v-if="type == 'add'"
+          class="d-flex align-content-space-around flex-wrap px-0"
+          flat
+          tile
+        >
           <v-card
             v-for="(n, index) in item.images"
             :key="index"
@@ -36,7 +45,14 @@
             height="120"
           >
             <v-img contain width="100" height="100" :src="returnImage(n)">
-              <v-btn fab color="red" x-small top right @click="deleteImage(index)">
+              <v-btn
+                fab
+                color="red"
+                x-small
+                top
+                right
+                @click="deleteImage(index)"
+              >
                 <v-icon color="white">mdi-close</v-icon>
               </v-btn>
             </v-img>
@@ -50,12 +66,14 @@
         <v-row
           class="mx-0 my-0 px-0 align-self-start font-weight-light red--text"
           v-if="this.imageError && this.imageError != ''"
-        >{{ this.imageError }}</v-row>
+          >{{ this.imageError }}</v-row
+        >
         <v-row class="mx-0 my-0">
           <v-card-subtitle
             v-if="this.fileError && this.fileError !== ''"
             class="font-weight-light mx-0 my-0 py-0 px-0 red--text text--lighten-1"
-          >{{ this.fileError }}</v-card-subtitle>
+            >{{ this.fileError }}</v-card-subtitle
+          >
           <v-spacer></v-spacer>
         </v-row>
         <input
@@ -82,7 +100,13 @@
             />
           </v-card>
           <v-card class="pr-4" flat max-width="200">
-            <v-text-field dense type="number" suffix="%" v-model="item.sale" step="any">
+            <v-text-field
+              dense
+              type="number"
+              suffix="%"
+              v-model="item.sale"
+              step="any"
+            >
               <template v-slot:label>
                 <div>
                   Sale
@@ -95,9 +119,26 @@
 
         <v-card-subtitle class="overline">Quantity and Size</v-card-subtitle>
 
-        <v-card class="d-flex align-content-space-around flex-wrap px-0" flat tile>
-          <v-card v-for="n in item.quantity" :key="n.size" class="pr-4" tile flat max-width="200">
-            <v-text-field dense type="number" step="any" min="0" v-model="n.number">
+        <v-card
+          class="d-flex align-content-space-around flex-wrap px-0"
+          flat
+          tile
+        >
+          <v-card
+            v-for="n in item.quantity"
+            :key="n.size"
+            class="pr-4"
+            tile
+            flat
+            max-width="200"
+          >
+            <v-text-field
+              dense
+              type="number"
+              step="any"
+              min="0"
+              v-model="n.number"
+            >
               <template v-slot:label>
                 <div>
                   Quantity
@@ -192,10 +233,10 @@ export default {
           data.append("images", image);
         });
         this.$store
-          .dispatch("addProduct", {formdata: data, numberOfImages})
+          .dispatch("addProduct", { formdata: data, numberOfImages })
           .then(res => {
             //show product added message with snackbar
-             let payload = {
+            let payload = {
               text: item.name + " has been added successfully.",
               timeout: 5000
             };
@@ -206,7 +247,7 @@ export default {
           .catch(err => {
             console.log(err);
             let payload = {
-              text: "Failed. "+err,
+              text: "Failed. " + err,
               timeout: 5000
             };
             this.$store.commit("showSnackbar", payload);

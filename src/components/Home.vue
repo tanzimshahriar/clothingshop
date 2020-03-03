@@ -6,84 +6,82 @@
           <v-col no-gutters class="grey lighten-4 py-2 px-2" align="center">
             <FilterComponent />
             <v-flex no-gutters row align-self-center align-center justify-center class="py-3">
-              <v-card v-if="loading"
-                class="mt-2 mb-2 ml-2 mr-2"
-                :width="cardWidth"
-                elevation="1"
-              >
-                <v-sheet 
-                  :color="`grey ${theme.isDark ? 'darken-2' : 'lighten-4'}`"
-                  class="px-3 pt-3 pb-3"
+              <v-flex v-if="loading" no-gutters row align-self-center align-center justify-center>
+                <v-card
+                  v-for="n in 10"
+                  v-bind:key="n"
+                  class="mt-2 mb-2 ml-2 mr-2"
+                  :width="cardWidth"
+                  :height="cardHeight"
+                  align-bottom
+                  elevation="1"
                 >
-                  <v-skeleton-loader
-                    class="mx-auto"
-                    max-width="300"
-                    type="card"
-                  ></v-skeleton-loader>
-                </v-sheet>
-              </v-card>
-              <v-card v-if="loading"
-                class="mt-2 mb-2 ml-2 mr-2"
-                :width="cardWidth"
-                elevation="1"
-              >
-                <v-sheet 
-                  :color="`grey ${theme.isDark ? 'darken-2' : 'lighten-4'}`"
-                  class="px-3 pt-3 pb-3"
-                >
-                  <v-skeleton-loader
-                    class="mx-auto"
-                    max-width="300"
-                    type="card"
-                  ></v-skeleton-loader>
-                </v-sheet>
-              </v-card>
-              <v-card v-if="loading"
-                class="mt-2 mb-2 ml-2 mr-2"
-                :width="cardWidth"
-                elevation="1"
-              >
-                <v-sheet 
-                  :color="`grey ${theme.isDark ? 'darken-2' : 'lighten-4'}`"
-                  class="px-3 pt-3 pb-3"
-                >
-                  <v-skeleton-loader
-                    class="mx-auto"
-                    max-width="300"
-                    type="card"
-                  ></v-skeleton-loader>
-                </v-sheet>
-              </v-card>
-              <v-card v-if="loading"
-                class="mt-2 mb-2 ml-2 mr-2"
-                :width="cardWidth"
-                elevation="1"
-              >
-                <v-sheet 
-                  :color="`grey ${theme.isDark ? 'darken-2' : 'lighten-4'}`"
-                  class="px-3 pt-3 pb-3"
-                >
-                  <v-skeleton-loader
-                    class="mx-auto"
-                    max-width="300"
-                    type="card"
-                  ></v-skeleton-loader>
-                </v-sheet>
-              </v-card>
+                  <v-sheet
+                    :color="`grey ${theme.isDark ? 'darken-2' : 'lighten-4'}`"
+                    :width="cardWidth"
+                    :height="cardHeight"
+                  >
+                    <v-skeleton-loader
+                      class="mx-auto"
+                      type="image,image,image"
+                      :height="cardHeight"
+                    ></v-skeleton-loader>
+                  </v-sheet>
+                </v-card>
+              </v-flex>
               <v-card
-                v-for="product in products"
-                v-bind:key="product.name"
-                class="mt-2 mb-2 ml-2 mr-2"
+                class="mt-2 mb-2 ml-2 mr-2 .d-flex flex-column"
                 :height="cardHeight"
                 :width="cardWidth"
                 elevation="1"
               >
-                <v-card-subtitle class="py-0 px-0 mx-0 my-0">{{ product.name }}</v-card-subtitle>
-                <v-card-text class="py-0 px-0 mx-0 my-0" v-if="product.sale==0">${{product.price}}</v-card-text>
-                <v-card-text class="py-0 px-0 mx-0 my-0" v-else>
-                  <strike>${{product.price}}</strike>
-                  <span class="red-text">${{product.price-product.price*(product.sale/100)}}</span>
-                  (ON {{product.sale}}% SALE)
+                <v-img aspect-ratio="1" :src="require('../assets/blackshirt.jpg')" />
+                <v-spacer></v-spacer>
+                <v-card-subtitle
+                  class="pt-2 pb-0 px-0 mx-0 my-0 font-weight-light black--text"
+                >Black Shirt</v-card-subtitle>
+
+                <v-card-text class="pt-0 pb-2 px-0 mx-0 my-0 font-weight-light black--text">
+                  <strike>$20</strike>
+                  <span class="red-text font-weight-bold">$18</span>
+                  (ON 10% SALE)
+                </v-card-text>
+              </v-card>
+              <v-card
+                class="mt-2 mb-2 ml-2 mr-2 .d-flex flex-column"
+                v-for="product in products"
+                v-bind:key="product.name"
+                :height="cardHeight"
+                :width="cardWidth"
+                elevation="1"
+              >
+                <v-img class="align-end .d-flex" aspect-ratio="1" :src="require('../assets/blackshirt.jpg')">
+                  <v-flex row>
+                    <v-spacer></v-spacer>
+                    <v-btn class="mx-2 my-2 align-end" fab light small color="white">
+                    <v-icon color="black">mdi-heart-outline</v-icon>
+                  </v-btn>
+                  </v-flex>
+                             
+                </v-img>
+                <v-spacer></v-spacer>
+                <v-card-subtitle class="pt-2 pb-0 px-0 mx-0 my-0 font-weight-light black--text">
+                  {{
+                  product.name
+                  }}
+                </v-card-subtitle>
+                <v-card-text
+                  class="pt-0 pb-2 px-0 mx-0 my-0 font-weight-light black--text"
+                  v-if="product.sale == 0"
+                >${{ product.price }}</v-card-text>
+                <v-card-text class="pt-0 pb-2 px-0 mx-0 my-0 font-weight-light black--text" v-else>
+                  <strike>${{ product.price }}</strike>
+                  <span class="red-text font-weight-bold">
+                    ${{
+                    product.price - product.price * (product.sale / 100)
+                    }}
+                  </span>
+                  (ON {{ product.sale }}% SALE)
                 </v-card-text>
               </v-card>
             </v-flex>
@@ -96,9 +94,10 @@
 
 <script>
 import FilterComponent from "./FilterComponent";
+import axios from "axios";
 export default {
   name: "home",
-  inject: ['theme'],
+  inject: ["theme"],
   components: {
     FilterComponent
   },
@@ -108,22 +107,36 @@ export default {
   }),
   mounted() {
     this.updateProducts();
+    this.getImageOfProduct(0);
   },
   // updated(){
   //   this.updateProducts();
   // },
   methods: {
+    //load the products on the home page
     updateProducts() {
       this.$store
         .dispatch("getProducts")
         .then(res => {
-          //show product added message with snackbar
           this.products = res.data.products;
           this.loading = false;
         })
         .catch(err => {
           console.log(err);
-          //show error with snackbar
+        });
+    },
+    //load the images on the homepage
+    getImageOfProduct(i) {
+      const url = "http://localhost:8080/getproductimage";
+      axios
+        .get(url, { responseType: "arraybuffer" })
+        .then(res => {
+          console.log("respoonse:");
+          console.log(res);
+          this.products[i].images[0] = res;
+        })
+        .catch(err => {
+          console.log(err);
         });
     }
   },
@@ -131,17 +144,17 @@ export default {
     cardHeight() {
       switch (this.$vuetify.breakpoint.name) {
         case "xs":
-          return "318px";
+          return "328px";
         case "sm":
-          return "230px";
+          return "250px";
         case "md":
-          return "300px";
+          return "310px";
         case "lg":
-          return "420px";
+          return "360px";
         case "xl":
-          return "660px";
+          return "610px";
         default:
-          return "300px";
+          return "310px";
       }
     },
 

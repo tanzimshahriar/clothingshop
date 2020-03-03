@@ -197,7 +197,7 @@
         buttonLabel2="Cancel"
         @click="logout"
         @click2="cancelLogout"
-    />
+      />
     </v-content>
     <FooterComponent v-if="!admin" />
   </v-app>
@@ -215,10 +215,10 @@ export default {
     Dialog
   },
   methods: {
-    confirmLogout(){
+    confirmLogout() {
       this.showConfirmLogout = true;
     },
-    cancelLogout(){
+    cancelLogout() {
       this.showConfirmLogout = false;
     },
     logout() {

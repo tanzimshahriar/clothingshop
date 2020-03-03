@@ -15,9 +15,14 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn small v-if="this.buttonLabel2" color="primary" text @click="btnClicked2">{{
-            this.buttonLabel2
-          }}</v-btn>
+          <v-btn
+            small
+            v-if="this.buttonLabel2"
+            color="primary"
+            text
+            @click="btnClicked2"
+            >{{ this.buttonLabel2 }}</v-btn
+          >
           <v-btn small color="primary" text @click="btnClicked">{{
             this.buttonLabel
           }}</v-btn>

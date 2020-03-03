@@ -5,8 +5,19 @@
         <v-col no-gutters>
           <v-col no-gutters align="center" class="px-0 py-0">
             <FilterComponent v-if="!this.showProductPanel" />
-            <v-row v-if="!showProductPanel" justify="end" class="pt-3" no-gutters>
-              <v-btn @click="addProduct" class="mx-1" x-small dark color="indigo">
+            <v-row
+              v-if="!showProductPanel"
+              justify="end"
+              class="pt-3"
+              no-gutters
+            >
+              <v-btn
+                @click="addProduct"
+                class="mx-1"
+                x-small
+                dark
+                color="indigo"
+              >
                 <v-icon small left dark>mdi-plus</v-icon>Add Product
               </v-btn>
             </v-row>
@@ -17,8 +28,8 @@
               description1="Once deleted the item can not be recovered"
               buttonLabel="Confirm"
               buttonLabel2="Cancel"
-              @click = "confirmDelete"
-              @click2 = "cancelDelete"
+              @click="confirmDelete"
+              @click2="cancelDelete"
             />
             <ProductPanel
               class="product-panel"
@@ -58,11 +69,19 @@
                     <td>{{ item.description }}</td>
                     <td>S,M,L</td>
                     <td>10S,5M,0L</td>
-                    <td>{{item.orders}}</td>
+                    <td>{{ item.orders }}</td>
                     <td>
                       <v-row>
-                        <v-btn class="mx-1" x-small color="amber" @click="editProduct(item)">Edit</v-btn>
-                        <v-btn x-small color="red" @click="deleteProduct(item)">Delete</v-btn>
+                        <v-btn
+                          class="mx-1"
+                          x-small
+                          color="amber"
+                          @click="editProduct(item)"
+                          >Edit</v-btn
+                        >
+                        <v-btn x-small color="red" @click="deleteProduct(item)"
+                          >Delete</v-btn
+                        >
                       </v-row>
                     </td>
                   </tr>
@@ -161,17 +180,17 @@ export default {
     confirmDelete() {
       //call api to delete product
       const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': this.$store.state.user.token
+        "Content-Type": "application/json",
+        Authorization: this.$store.state.user.token
       };
       var payload = {
         name: this.itemToDelete.name,
         price: this.itemToDelete.price,
         description: this.itemToDelete.description
-      }
+      };
       const url = "http://localhost:8080/deleteproduct";
       axios
-        .post(url, payload, {headers})
+        .post(url, payload, { headers })
         .then(res => {
           console.log(res);
           //show snackbar that item has been deleted
