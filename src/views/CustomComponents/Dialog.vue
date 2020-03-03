@@ -1,6 +1,6 @@
 <template>
   <div class="text-xs-center">
-    <v-dialog persistent v-model="this.show" width="unset">
+    <v-dialog persistent v-model="this.show" width="unset" max-width="600">
       <v-card>
         <v-card-title class="headline grey lighten-2" primary-title>{{
           this.title

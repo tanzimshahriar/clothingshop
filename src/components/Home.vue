@@ -5,23 +5,86 @@
         <v-row no-gutters class="mt-1">
           <v-col no-gutters class="grey lighten-4 py-2 px-2" align="center">
             <FilterComponent />
-            <v-flex
-              no-gutters
-              row
-              align-self-center
-              align-center
-              justify-center
-              class="py-3"
-            >
+            <v-flex no-gutters row align-self-center align-center justify-center class="py-3">
+              <v-card v-if="loading"
+                class="mt-2 mb-2 ml-2 mr-2"
+                :width="cardWidth"
+                elevation="1"
+              >
+                <v-sheet 
+                  :color="`grey ${theme.isDark ? 'darken-2' : 'lighten-4'}`"
+                  class="px-3 pt-3 pb-3"
+                >
+                  <v-skeleton-loader
+                    class="mx-auto"
+                    max-width="300"
+                    type="card"
+                  ></v-skeleton-loader>
+                </v-sheet>
+              </v-card>
+              <v-card v-if="loading"
+                class="mt-2 mb-2 ml-2 mr-2"
+                :width="cardWidth"
+                elevation="1"
+              >
+                <v-sheet 
+                  :color="`grey ${theme.isDark ? 'darken-2' : 'lighten-4'}`"
+                  class="px-3 pt-3 pb-3"
+                >
+                  <v-skeleton-loader
+                    class="mx-auto"
+                    max-width="300"
+                    type="card"
+                  ></v-skeleton-loader>
+                </v-sheet>
+              </v-card>
+              <v-card v-if="loading"
+                class="mt-2 mb-2 ml-2 mr-2"
+                :width="cardWidth"
+                elevation="1"
+              >
+                <v-sheet 
+                  :color="`grey ${theme.isDark ? 'darken-2' : 'lighten-4'}`"
+                  class="px-3 pt-3 pb-3"
+                >
+                  <v-skeleton-loader
+                    class="mx-auto"
+                    max-width="300"
+                    type="card"
+                  ></v-skeleton-loader>
+                </v-sheet>
+              </v-card>
+              <v-card v-if="loading"
+                class="mt-2 mb-2 ml-2 mr-2"
+                :width="cardWidth"
+                elevation="1"
+              >
+                <v-sheet 
+                  :color="`grey ${theme.isDark ? 'darken-2' : 'lighten-4'}`"
+                  class="px-3 pt-3 pb-3"
+                >
+                  <v-skeleton-loader
+                    class="mx-auto"
+                    max-width="300"
+                    type="card"
+                  ></v-skeleton-loader>
+                </v-sheet>
+              </v-card>
               <v-card
                 v-for="product in products"
-                v-bind:key="product.id"
+                v-bind:key="product.name"
                 class="mt-2 mb-2 ml-2 mr-2"
                 :height="cardHeight"
                 :width="cardWidth"
                 elevation="1"
               >
-                <v-card-title>{{ product.title }}</v-card-title>
+                <v-card-subtitle class="py-0 px-0 mx-0 my-0">{{ product.name }}</v-card-subtitle>
+                <v-card-text class="py-0 px-0 mx-0 my-0" v-if="product.sale==0">${{product.price}}</v-card-text>
+                <v-card-text class="py-0 px-0 mx-0 my-0" v-else>
+                  <strike>${{product.price}}</strike>
+                  <span class="red-text">${{product.price-product.price*(product.sale/100)}}</span>
+                  (ON {{product.sale}}% SALE)
+                </v-card-text>
               </v-card>
             </v-flex>
           </v-col>
@@ -35,48 +98,35 @@
 import FilterComponent from "./FilterComponent";
 export default {
   name: "home",
+  inject: ['theme'],
   components: {
     FilterComponent
   },
   data: () => ({
-    products: [
-      {
-        title: "T-Shirt",
-        price: 15,
-        desc: "yjfjhj"
-      },
-      {
-        title: "Jeans",
-        price: 40,
-        desc: "kghhjghjghgj"
-      },
-      {
-        title: "Cap",
-        price: 60,
-        desc: "kghhjghjghgj"
-      },
-      {
-        title: "Shoe",
-        price: 90,
-        desc: "kghhjghjghgj"
-      },
-      {
-        title: "Watch",
-        price: 80,
-        desc: "kghhjghjghgj"
-      },
-      {
-        title: "Belt",
-        price: 80,
-        desc: "kghhjghjghgj"
-      },
-      {
-        title: "Dress",
-        price: 60,
-        desc: "kghhjghjghgj"
-      }
-    ]
+    products: [],
+    loading: true
   }),
+  mounted() {
+    this.updateProducts();
+  },
+  // updated(){
+  //   this.updateProducts();
+  // },
+  methods: {
+    updateProducts() {
+      this.$store
+        .dispatch("getProducts")
+        .then(res => {
+          //show product added message with snackbar
+          this.products = res.data.products;
+          this.loading = false;
+        })
+        .catch(err => {
+          console.log(err);
+          //show error with snackbar
+        });
+    }
+  },
   computed: {
     cardHeight() {
       switch (this.$vuetify.breakpoint.name) {
@@ -94,6 +144,7 @@ export default {
           return "300px";
       }
     },
+
     cardWidth() {
       switch (this.$vuetify.breakpoint.name) {
         case "xs":
@@ -113,3 +164,10 @@ export default {
   }
 };
 </script>
+<style lang="css" scoped>
+.red-text {
+  color: red;
+  padding: 0;
+  margin: 0;
+}
+</style>

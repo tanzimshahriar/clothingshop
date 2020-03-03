@@ -172,9 +172,9 @@ export default {
 
     saveProduct() {
       const item = this.item;
+      var numberOfImages = item.images.length;
       if (this.type == "add") {
         const data = new FormData();
-
         data.append("name", item.name);
         data.append("description", item.description);
         data.append("price", item.price);
@@ -187,21 +187,29 @@ export default {
             quantity.number ? quantity.number : 0
           );
         });
-
         Object.keys(item.images).forEach(function(key) {
           var image = Object.values(item.images)[key];
-          data.append("image:" + key, image);
+          data.append("images", image);
         });
-
         this.$store
-          .dispatch("addProduct", data)
+          .dispatch("addProduct", {formdata: data, numberOfImages})
           .then(res => {
             //show product added message with snackbar
+             let payload = {
+              text: item.name + " has been added successfully.",
+              timeout: 5000
+            };
+            this.$store.commit("showSnackbar", payload);
             console.log(res);
             this.$emit("click", this.item);
           })
           .catch(err => {
             console.log(err);
+            let payload = {
+              text: "Failed. "+err,
+              timeout: 5000
+            };
+            this.$store.commit("showSnackbar", payload);
             //show error with snackbar
           });
         console.log("Call api to add " + this.item.name);
@@ -255,9 +263,6 @@ export default {
   mounted() {
     this.item = { ...this.product };
   },
-  // updated() {
-  //   console.log(this.product.title);
-  // },
   computed: {
     header() {
       return this.type == "add" ? "Add Product" : "Edit Product";

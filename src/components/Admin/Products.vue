@@ -175,14 +175,13 @@ export default {
         .then(res => {
           console.log(res);
           //show snackbar that item has been deleted
+          this.updateProducts();
         })
         .catch(err => {
           console.log(err);
           //show sncakbar that item hasnt been deleted
         });
       //on success close the dialog
-      console.log("To be deleted:");
-      console.log(this.itemToDelete.name);
       this.showDeleteDialog = false;
     },
     cancelDelete() {
