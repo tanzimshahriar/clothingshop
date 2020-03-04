@@ -29,24 +29,7 @@
                   </v-sheet>
                 </v-card>
               </v-flex>
-              <v-card
-                class="mt-2 mb-2 ml-2 mr-2 .d-flex flex-column"
-                :height="cardHeight"
-                :width="cardWidth"
-                elevation="1"
-              >
-                <v-img aspect-ratio="1" :src="require('../assets/blackshirt.jpg')" />
-                <v-spacer></v-spacer>
-                <v-card-subtitle
-                  class="pt-2 pb-0 px-0 mx-0 my-0 font-weight-light black--text"
-                >Black Shirt</v-card-subtitle>
 
-                <v-card-text class="pt-0 pb-2 px-0 mx-0 my-0 font-weight-light black--text">
-                  <strike>$20</strike>
-                  <span class="red-text font-weight-bold">$18</span>
-                  (ON 10% SALE)
-                </v-card-text>
-              </v-card>
               <v-card
                 class="mt-2 mb-2 ml-2 mr-2 .d-flex flex-column"
                 v-for="product in products"
@@ -55,30 +38,34 @@
                 :width="cardWidth"
                 elevation="1"
               >
-                <v-img class="align-end .d-flex" aspect-ratio="1" :src="require('../assets/blackshirt.jpg')">
+                <v-img
+                  v-if="product.images && product.images.length>=1"
+                  class="align-end .d-flex"
+                  aspect-ratio="1"
+                  :src="productImg(product)">
                   <v-flex row>
                     <v-spacer></v-spacer>
                     <v-btn class="mx-2 my-2 align-end" fab light small color="white">
-                    <v-icon color="black">mdi-heart-outline</v-icon>
-                  </v-btn>
+                      <v-icon color="black">mdi-heart-outline</v-icon>
+                    </v-btn>
                   </v-flex>
-                             
                 </v-img>
                 <v-spacer></v-spacer>
-                <v-card-subtitle class="pt-2 pb-0 px-0 mx-0 my-0 font-weight-light black--text">
-                  {{
-                  product.name
-                  }}
-                </v-card-subtitle>
+                <v-card-subtitle
+                  class="pt-2 pb-0 px-0 mx-0 my-0 font-weight-light black--text"
+                >{{ product.name }}</v-card-subtitle>
                 <v-card-text
                   class="pt-0 pb-2 px-0 mx-0 my-0 font-weight-light black--text"
                   v-if="product.sale == 0"
-                >${{ product.price }}</v-card-text>
+                >${{ product.price.toFixed(2) }}</v-card-text>
                 <v-card-text class="pt-0 pb-2 px-0 mx-0 my-0 font-weight-light black--text" v-else>
                   <strike>${{ product.price }}</strike>
                   <span class="red-text font-weight-bold">
                     ${{
-                    product.price - product.price * (product.sale / 100)
+                    (
+                    product.price -
+                    product.price * (product.sale / 100)
+                    ).toFixed(2)
                     }}
                   </span>
                   (ON {{ product.sale }}% SALE)
@@ -94,7 +81,6 @@
 
 <script>
 import FilterComponent from "./FilterComponent";
-import axios from "axios";
 export default {
   name: "home",
   inject: ["theme"],
@@ -103,15 +89,12 @@ export default {
   },
   data: () => ({
     products: [],
-    loading: true
+    loading: true,
+    tempimg: null
   }),
   mounted() {
     this.updateProducts();
-    this.getImageOfProduct(0);
   },
-  // updated(){
-  //   this.updateProducts();
-  // },
   methods: {
     //load the products on the home page
     updateProducts() {
@@ -120,25 +103,18 @@ export default {
         .then(res => {
           this.products = res.data.products;
           this.loading = false;
+          // this.getImageOfProduct(0);
         })
         .catch(err => {
           console.log(err);
         });
     },
-    //load the images on the homepage
-    getImageOfProduct(i) {
-      const url = "http://localhost:8080/getproductimage";
-      axios
-        .get(url, { responseType: "arraybuffer" })
-        .then(res => {
-          console.log("respoonse:");
-          console.log(res);
-          this.products[i].images[0] = res;
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    }
+    productImg(product) {
+      var image = "data:" + product.images[0].contentType + ";base64," + product.images[0].image;
+      var img = new Image();
+      img.src = image;
+      return img.src;
+    },
   },
   computed: {
     cardHeight() {

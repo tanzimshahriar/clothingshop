@@ -290,6 +290,7 @@ export default {
         : true;
     },
     returnImage(file) {
+      console.log(URL.createObjectURL(file))
       return URL.createObjectURL(file);
     }
   },
