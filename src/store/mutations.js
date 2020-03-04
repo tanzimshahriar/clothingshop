@@ -5,11 +5,15 @@ export default {
     state.user.token = payload.token;
     state.user.type = payload.type;
   },
+  setAdmin(state) {
+    state.user.admin = true;
+  },
   logout(state) {
     localStorage.removeItem("JWT_TOKEN");
     localStorage.removeItem("ACCOUNT_TYPE");
     state.user.token = null;
     state.user.type = null;
+    state.user.admin = false;
   },
   resetErrorMessage(state) {
     state.errorMessage = "";
