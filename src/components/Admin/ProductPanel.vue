@@ -30,7 +30,6 @@
 
         <v-card-subtitle class="overline px-0 mx-0">Images</v-card-subtitle>
         <v-card
-          v-if="type == 'add'"
           class="d-flex align-content-space-around flex-wrap px-0"
           flat
           tile
@@ -177,6 +176,7 @@ export default {
     priceError: "",
     imageError: ""
   }),
+
   methods: {
     btnClicked() {
       if (!this.item.name || this.item.name == "") {
@@ -210,50 +210,51 @@ export default {
     deleteImage(index) {
       this.item.images.splice(index, 1);
     },
-
-    saveProduct() {
+    makeApiRequestForSaveProduct() {
       const item = this.item;
       var numberOfImages = item.images.length;
-      if (this.type == "add") {
-        const data = new FormData();
-        data.append("name", item.name);
-        data.append("description", item.description);
-        data.append("price", item.price);
-        item.sale ? data.append("sale", item.sale) : null;
+      const data = new FormData();
+      data.append("name", item.name);
+      data.append("description", item.description);
+      data.append("price", item.price);
+      item.sale ? data.append("sale", item.sale) : null;
 
-        Object.keys(item.quantity).forEach(function(key) {
-          var quantity = Object.values(item.quantity)[key];
-          data.append(
-            "size:" + quantity.size,
-            quantity.number ? quantity.number : 0
-          );
+      Object.keys(item.quantity).forEach(function(key) {
+        var quantity = Object.values(item.quantity)[key];
+        data.append(
+          "size:" + quantity.size,
+          quantity.number ? quantity.number : 0
+        );
+      });
+      Object.keys(item.images).forEach(function(key) {
+        var image = Object.values(item.images)[key];
+        data.append("images", image);
+      });
+      this.$store
+        .dispatch("addProduct", { formdata: data, numberOfImages })
+        .then(res => {
+          //show product added message with snackbar
+          let payload = {
+            text: item.name + " has been added successfully.",
+            timeout: 5000
+          };
+          this.$store.commit("showSnackbar", payload);
+          console.log(res);
+          this.$emit("click", this.item);
+        })
+        .catch(err => {
+          console.log(err);
+          let payload = {
+            text: "Failed. " + err,
+            timeout: 5000
+          };
+          this.$store.commit("showSnackbar", payload);
+          //show error with snackbar
         });
-        Object.keys(item.images).forEach(function(key) {
-          var image = Object.values(item.images)[key];
-          data.append("images", image);
-        });
-        this.$store
-          .dispatch("addProduct", { formdata: data, numberOfImages })
-          .then(res => {
-            //show product added message with snackbar
-            let payload = {
-              text: item.name + " has been added successfully.",
-              timeout: 5000
-            };
-            this.$store.commit("showSnackbar", payload);
-            console.log(res);
-            this.$emit("click", this.item);
-          })
-          .catch(err => {
-            console.log(err);
-            let payload = {
-              text: "Failed. " + err,
-              timeout: 5000
-            };
-            this.$store.commit("showSnackbar", payload);
-            //show error with snackbar
-          });
-        console.log("Call api to add " + this.item.name);
+    },
+    saveProduct() {
+      if (this.type == "add") {
+        this.makeApiRequestForSaveProduct();
       } else {
         console.log(
           "Call api to edit " + this.product.name + " to " + this.item.name
@@ -290,8 +291,14 @@ export default {
         : true;
     },
     returnImage(file) {
-      console.log(URL.createObjectURL(file))
-      return URL.createObjectURL(file);
+      if (file.contentType) {
+        var image = "data:" + file.contentType + ";base64," + file.image;
+        var img = new Image();
+        img.src = image;
+        return img.src;
+      } else {
+        return URL.createObjectURL(file);
+      }
     }
   },
   watch: {
