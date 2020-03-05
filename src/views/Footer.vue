@@ -3,14 +3,16 @@
     <Dialog
       :show="privacy"
       title="Privacy Policy"
-      description1="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+      description1="This is not a real website. It is a mock website for development and testing purposes."
+      description2="Do not make a payment through this website."
       buttonLabel="I understand"
       @click="closePrivacy"
     />
     <Dialog
       :show="tAndC"
       title="Terms And Conditions"
-      description1="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+      description1="This is not a real website. It is a mock website for development and testing purposes."
+      description2="Do not make a payment through this website."
       buttonLabel="I accept"
       @click="closeTAndC"
     />
@@ -18,7 +20,7 @@
       :show="contactUs"
       title="Contact Us"
       description1="Email: abcd@abc.com"
-      description2="Phone:0470086814"
+      description2="Phone:0470000000"
       buttonLabel="Close"
       @click="closeContactUs"
     />

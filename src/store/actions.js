@@ -106,10 +106,7 @@ export default {
         "Content-Type": "multipart/form-data",
         Authorization: context.state.user.token
       };
-      var url =
-        data.numberOfImages > 1
-          ? "http://localhost:8080/addproductmultipleimages"
-          : "http://localhost:8080/addproductsingleimage";
+      var url = "http://localhost:8080/addproduct"
       axios
         .post(url, data.formdata, {
           headers

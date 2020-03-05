@@ -1,26 +1,34 @@
 <template>
   <v-card class="px-0 py-0 mx-0 my-0">
-    <v-layout
-      no-gutters
-      fill-height
-      align-center
-      justify-start
-      class="px-0 py-0 mx-0 my-0"
-    >
+    <v-layout no-gutters fill-height align-center justify-start class="px-0 py-0 mx-0 my-0">
       <v-flex no-gutters column :class="flexClass">
         <v-row justify="center" class="px-0 py-0 mx-0 my-0">
-          <v-card-title class="font-weight-light" primary-title>
-            {{ header }}
-          </v-card-title>
+          <v-card-title class="font-weight-light" primary-title>{{ header }}</v-card-title>
         </v-row>
         <v-card-subtitle class="overline px-0 mx-0">Details</v-card-subtitle>
         <v-text-field
+          class="mb-2"
           dense
           label="Name"
           :error-messages="nameError"
           v-model="item.name"
           type="text"
         />
+        <v-text-field
+          :disabled="!showProductCode"
+          class="mt-2"
+          dense
+          :error-messages="codeError"
+          v-model="item.code"
+          type="text"
+        >
+          <template v-slot:label>
+            <div>
+              Product Code
+              <small>(Product code can't be changed)</small>
+            </div>
+          </template>
+        </v-text-field>
         <v-textarea
           class="description"
           :error-messages="descriptionError"
@@ -29,11 +37,7 @@
         />
 
         <v-card-subtitle class="overline px-0 mx-0">Images</v-card-subtitle>
-        <v-card
-          class="d-flex align-content-space-around flex-wrap px-0"
-          flat
-          tile
-        >
+        <v-card class="d-flex align-content-space-around flex-wrap px-0" flat tile>
           <v-card
             v-for="(n, index) in item.images"
             :key="index"
@@ -43,15 +47,8 @@
             width="100"
             height="120"
           >
-            <v-img contain width="100" height="100" :src="returnImage(n)">
-              <v-btn
-                fab
-                color="red"
-                x-small
-                top
-                right
-                @click="deleteImage(index)"
-              >
+            <v-img alt="product-image" contain width="100" height="100" :src="returnImage(n)">
+              <v-btn fab color="red" x-small top right @click="deleteImage(index)">
                 <v-icon color="white">mdi-close</v-icon>
               </v-btn>
             </v-img>
@@ -65,14 +62,12 @@
         <v-row
           class="mx-0 my-0 px-0 align-self-start font-weight-light red--text"
           v-if="this.imageError && this.imageError != ''"
-          >{{ this.imageError }}</v-row
-        >
+        >{{ this.imageError }}</v-row>
         <v-row class="mx-0 my-0">
           <v-card-subtitle
             v-if="this.fileError && this.fileError !== ''"
             class="font-weight-light mx-0 my-0 py-0 px-0 red--text text--lighten-1"
-            >{{ this.fileError }}</v-card-subtitle
-          >
+          >{{ this.fileError }}</v-card-subtitle>
           <v-spacer></v-spacer>
         </v-row>
         <input
@@ -99,13 +94,7 @@
             />
           </v-card>
           <v-card class="pr-4" flat max-width="200">
-            <v-text-field
-              dense
-              type="number"
-              suffix="%"
-              v-model="item.sale"
-              step="any"
-            >
+            <v-text-field dense type="number" suffix="%" v-model="item.sale" step="any">
               <template v-slot:label>
                 <div>
                   Sale
@@ -118,26 +107,9 @@
 
         <v-card-subtitle class="overline">Quantity and Size</v-card-subtitle>
 
-        <v-card
-          class="d-flex align-content-space-around flex-wrap px-0"
-          flat
-          tile
-        >
-          <v-card
-            v-for="n in item.quantity"
-            :key="n.size"
-            class="pr-4"
-            tile
-            flat
-            max-width="200"
-          >
-            <v-text-field
-              dense
-              type="number"
-              step="any"
-              min="0"
-              v-model="n.number"
-            >
+        <v-card class="d-flex align-content-space-around flex-wrap px-0" flat tile>
+          <v-card v-for="n in item.quantity" :key="n.size" class="pr-4" tile flat max-width="200">
+            <v-text-field dense type="number" step="any" min="0" v-model="n.number">
               <template v-slot:label>
                 <div>
                   Quantity
@@ -170,15 +142,23 @@ export default {
   data: () => ({
     item: {},
     uploading: false,
+    code: "",
     fileError: "",
     nameError: "",
+    codeError: "",
     descriptionError: "",
     priceError: "",
-    imageError: ""
+    imageError: "",
+    deletedOldImages: []
   }),
 
   methods: {
     btnClicked() {
+      if (!this.item.code || this.item.code == "") {
+        this.codeError = "Product code can not be empty";
+      } else {
+        this.codeError = "";
+      }
       if (!this.item.name || this.item.name == "") {
         this.nameError = "Name can not be empty";
       } else {
@@ -208,16 +188,34 @@ export default {
       this.$emit("cancel");
     },
     deleteImage(index) {
+      //if an old image is edited save that image path
+      if (this.item.images[index].contentType) {
+        this.deletedOldImages.push(this.item.images[index].path);
+      }
       this.item.images.splice(index, 1);
     },
     makeApiRequestForSaveProduct() {
       const item = this.item;
-      var numberOfImages = item.images.length;
       const data = new FormData();
+      const deletedOldImages = this.deletedOldImages;
+
+      var isNewProduct = this.type == "add" ? true : false;
+      data.append("isNewProduct", isNewProduct);
+      data.append("code", item.code);
       data.append("name", item.name);
       data.append("description", item.description);
       data.append("price", item.price);
       item.sale ? data.append("sale", item.sale) : null;
+      console.log(JSON.stringify(this.deletedOldImages));
+
+      deletedOldImages.length == 0
+        ? null
+        : deletedOldImages.length == 1
+        ? data.append("deletedOldImage", deletedOldImages[0])
+        : Object.keys(deletedOldImages).forEach(function(key) {
+            var deletedOldImage = Object.values(deletedOldImages)[key];
+            data.append("deletedOldImages", deletedOldImage);
+          });
 
       Object.keys(item.quantity).forEach(function(key) {
         var quantity = Object.values(item.quantity)[key];
@@ -226,21 +224,32 @@ export default {
           quantity.number ? quantity.number : 0
         );
       });
+
       Object.keys(item.images).forEach(function(key) {
         var image = Object.values(item.images)[key];
-        data.append("images", image);
+        image.contentType ? null : data.append("images", image);
       });
       this.$store
-        .dispatch("addProduct", { formdata: data, numberOfImages })
+        .dispatch("addProduct", { formdata: data })
         .then(res => {
           //show product added message with snackbar
           let payload = {
-            text: item.name + " has been added successfully.",
+            text:
+              this.type == "add"
+                ? item.name + " has been added successfully."
+                : item.name + " has been updated successfully.",
             timeout: 5000
           };
-          this.$store.commit("showSnackbar", payload);
-          console.log(res);
-          this.$emit("click", this.item);
+          if (res.data.result == "success" && res.status == 200) {
+            this.$store.commit("showSnackbar", payload);
+            this.$emit("click");
+          } else {
+            const errorPayload = {
+              text: "Failed to add item. Try Again.",
+              timeout: 5000
+            };
+            this.$store.commit("showSnackbar", errorPayload);
+          }
         })
         .catch(err => {
           console.log(err);
@@ -253,14 +262,8 @@ export default {
         });
     },
     saveProduct() {
-      if (this.type == "add") {
-        this.makeApiRequestForSaveProduct();
-      } else {
-        console.log(
-          "Call api to edit " + this.product.name + " to " + this.item.name
-        );
-        this.$emit("click", this.item);
-      }
+      this.makeApiRequestForSaveProduct();
+      this.$emit("click", this.item);
       //reload table
     },
     onFileSelected(e) {
@@ -334,6 +337,9 @@ export default {
         default:
           return "mx-2 my-2";
       }
+    },
+    showProductCode() {
+      return this.type == "add" ? true : false;
     }
   }
 };
