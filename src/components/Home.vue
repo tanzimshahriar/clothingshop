@@ -5,8 +5,22 @@
         <v-row no-gutters class="mt-1">
           <v-col no-gutters class="grey lighten-4 py-2 px-2" align="center">
             <FilterComponent />
-            <v-flex no-gutters row align-self-center align-center justify-center class="py-3">
-              <v-flex v-if="loading" no-gutters row align-self-center align-center justify-center>
+            <v-flex
+              no-gutters
+              row
+              align-self-center
+              align-center
+              justify-center
+              class="py-3"
+            >
+              <v-flex
+                v-if="loading"
+                no-gutters
+                row
+                align-self-center
+                align-center
+                justify-center
+              >
                 <v-card
                   v-for="n in 10"
                   v-bind:key="n"
@@ -39,13 +53,20 @@
                 elevation="1"
               >
                 <v-img
-                  v-if="product.images && product.images.length>=1"
+                  v-if="product.images && product.images.length >= 1"
                   class="align-end .d-flex"
                   aspect-ratio="1"
-                  :src="productImg(product)">
+                  :src="productImg(product)"
+                >
                   <v-flex row>
                     <v-spacer></v-spacer>
-                    <v-btn class="mx-2 my-2 align-end" fab light small color="white">
+                    <v-btn
+                      class="mx-2 my-2 align-end"
+                      fab
+                      light
+                      small
+                      color="white"
+                    >
                       <v-icon color="black">mdi-heart-outline</v-icon>
                     </v-btn>
                   </v-flex>
@@ -53,19 +74,24 @@
                 <v-spacer></v-spacer>
                 <v-card-subtitle
                   class="pt-2 pb-0 px-0 mx-0 my-0 font-weight-light black--text"
-                >{{ product.name }}</v-card-subtitle>
+                  >{{ product.name }}</v-card-subtitle
+                >
                 <v-card-text
                   class="pt-0 pb-2 px-0 mx-0 my-0 font-weight-light black--text"
                   v-if="product.sale == 0"
-                >${{ product.price.toFixed(2) }}</v-card-text>
-                <v-card-text class="pt-0 pb-2 px-0 mx-0 my-0 font-weight-light black--text" v-else>
+                  >${{ product.price.toFixed(2) }}</v-card-text
+                >
+                <v-card-text
+                  class="pt-0 pb-2 px-0 mx-0 my-0 font-weight-light black--text"
+                  v-else
+                >
                   <strike>${{ product.price }}</strike>
                   <span class="red-text font-weight-bold">
                     ${{
-                    (
-                    product.price -
-                    product.price * (product.sale / 100)
-                    ).toFixed(2)
+                      (
+                        product.price -
+                        product.price * (product.sale / 100)
+                      ).toFixed(2)
                     }}
                   </span>
                   (ON {{ product.sale }}% SALE)
@@ -110,11 +136,15 @@ export default {
         });
     },
     productImg(product) {
-      var image = "data:" + product.images[0].contentType + ";base64," + product.images[0].image;
+      var image =
+        "data:" +
+        product.images[0].contentType +
+        ";base64," +
+        product.images[0].image;
       var img = new Image();
       img.src = image;
       return img.src;
-    },
+    }
   },
   computed: {
     cardHeight() {

@@ -11,6 +11,15 @@
               class="pt-3"
               no-gutters
             >
+            <v-btn
+                @click="updateProducts"
+                class="mx-1"
+                x-small
+                dark
+                color=light
+              >
+                <v-icon small left light>mdi-reload</v-icon>Reload Products
+              </v-btn>
               <v-btn
                 @click="addProduct"
                 class="mx-1"
@@ -39,17 +48,15 @@
               @click="save"
               @cancel="closeProductPanel"
             />
-
-            <v-simple-table v-if="!showProductPanel" class="my-3 mx-2">
+            <v-card-text v-if="loading">Loading...</v-card-text>
+            <v-simple-table v-if="!showProductPanel && !loading && products.length!=0" class="my-3 mx-2">
               <template v-slot:default>
                 <thead>
                   <tr>
+                    <th class="text-left">Product Code</th>
                     <th class="text-left">Name</th>
                     <th class="text-left">Price</th>
                     <th class="text-left">Sale</th>
-                    <th class="text-left">Images</th>
-                    <th class="text-left">Description</th>
-                    <th class="text-left">Sizes</th>
                     <th class="text-left">Quantity</th>
                     <th class="text-left">Orders</th>
                     <th v-if="edit" class="text-left">Actions</th>
@@ -58,6 +65,9 @@
                 <tbody>
                   <tr v-for="item in products" :key="item.name">
                     <td>
+                      <v-card-text>{{ item.code }}</v-card-text>
+                    </td>
+                    <td>
                       <v-card-text>{{ item.name }}</v-card-text>
                     </td>
                     <td>
@@ -65,9 +75,6 @@
                     </td>
                     <td v-if="item.sale">{{ item.sale }}%</td>
                     <td v-if="!item.sale">None</td>
-                    <td></td>
-                    <td>{{ item.description }}</td>
-                    <td>S,M,L</td>
                     <td>10S,5M,0L</td>
                     <td>{{ item.orders }}</td>
                     <td>
@@ -88,6 +95,7 @@
                 </tbody>
               </template>
             </v-simple-table>
+            <v-card-text v-if="noProducts && !showProductPanel && !loading">No Pruduct has been added.</v-card-text>
           </v-col>
         </v-col>
       </v-flex>
@@ -108,31 +116,31 @@ export default {
     DeleteDialog
   },
   data: () => ({
+    loading: false,
     showProductPanel: false,
     productPanelType: "",
     currentProduct: {},
     edit: true,
     showDeleteDialog: false,
     itemToDelete: null,
-    products: []
+    products: [],
+    noProducts : false
   }),
   mounted() {
     this.updateProducts();
   },
-  updated() {
-    this.updateProducts();
-  },
   methods: {
     updateProducts() {
+      this.loading = true;
       this.$store
         .dispatch("getProducts")
         .then(res => {
-          //show product added message with snackbar
+          this.loading = false;
           this.products = res.data.products;
+          res.data.products.length==0? this.noProducts = true : this.noProducts = false;
         })
         .catch(err => {
           console.log(err);
-          //show error with snackbar
         });
     },
     selectSort(item) {
@@ -142,6 +150,7 @@ export default {
       this.productPanelType = "add";
       this.currentProduct = {
         name: "",
+        code: "",
         description: "",
         quantity: [
           {
@@ -184,9 +193,7 @@ export default {
         Authorization: this.$store.state.user.token
       };
       var payload = {
-        name: this.itemToDelete.name,
-        price: this.itemToDelete.price,
-        description: this.itemToDelete.description
+        code: this.itemToDelete.code
       };
       const url = "http://localhost:8080/deleteproduct";
       axios
@@ -212,8 +219,9 @@ export default {
       this.currentProduct = item;
     },
     save() {
-      //reload table then close panel
+      //close panel and reload products
       this.closeProductPanel();
+      this.updateProducts();
     },
     closeProductPanel() {
       this.showProductPanel = false;

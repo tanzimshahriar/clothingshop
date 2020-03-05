@@ -190,6 +190,14 @@
         <router-view></router-view>
       </v-container>
       <Dialog
+        :show="showMockWebsiteDialog"
+        title="IMPORTANT"
+        description1="This is not a real website. It is a mock website for development and testing purposes."
+        description2="Do not make a payment through this website."
+        buttonLabel="I Understand"
+        @click="hideMockWebsiteDialog"
+      />
+      <Dialog
         :show="showConfirmLogout"
         title="Logout?"
         description1="Are you sure you want to logout?"
@@ -215,6 +223,9 @@ export default {
     Dialog
   },
   methods: {
+    hideMockWebsiteDialog(){
+      this.showMockWebsiteDialog = false;
+    },
     confirmLogout() {
       this.showConfirmLogout = true;
     },
@@ -242,7 +253,8 @@ export default {
   data() {
     return {
       sideNav: false,
-      showConfirmLogout: false
+      showConfirmLogout: false,
+      showMockWebsiteDialog: false
     };
   },
   computed: {
@@ -278,6 +290,7 @@ export default {
     if (this.$store.getters.loggedIn) {
       this.$store.dispatch("checkAdmin", this.$store.state.user.token);
     }
+    this.showMockWebsiteDialog = true;
   }
 };
 </script>
