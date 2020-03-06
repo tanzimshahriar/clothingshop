@@ -36,9 +36,14 @@ export default {
     state.snackbar.timeout = 5000;
     state.snackbar.text = null;
   },
-  addItemToCartInState(state, item) {
-    var cart = state.cart? state.cart : [];
-    cart.push(item)
+  incrementItemQuantity(state, code){
+    var cart = state.cart;
+    for(var i = 0; i < cart.length; i++){
+      if(cart[i].code == code){
+        cart[i].cartQuantity = cart[i].cartQuantity + 1;
+        break;
+      }
+    }
     state.cart = cart;
   },
   updateCartItemCookies(state) {

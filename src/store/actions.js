@@ -137,7 +137,7 @@ export default {
   addItemToCart(context, item) {
     return new Promise((resolve, reject) => {
       //if user is logged in make a api req to add the item to users cart
-      if(context.getters.loggedin){
+      if (context.getters.loggedin) {
         const url = "http://localhost:8080/getproducts";
         axios
           .get(url)
@@ -150,11 +150,32 @@ export default {
       }
       //if user isnt logged in save the item to cookies
       else {
-        context.commit("addItemToCartInState", item)
+        //1. add the item to cart in state
+        var cart = context.state.cart ? context.state.cart : [];
+        var existingItem = false;
+        for (var i = 0; i < cart.length; i++) {
+          if (item.code == cart[i].code) {
+            existingItem = true;
+            break;
+          }
+        }
+        if (existingItem) {
+          //increment quantity of the item in cart
+          context.commit("incrementItemQuantity", item.code)
+        } else {
+          //initialize cartQuantity so it can be used later
+          item.cartQuantity = 1; 
+          cart.push(item)
+          context.state.cart = cart;
+        }
+
+        //2. update the local storage cart
         context.commit("updateCartItemCookies", item)
-        resolve({message: item.name + " has been added to your cart"})
+        resolve({
+          message: item.name + " has been added to your cart"
+        })
       }
     });
-      
+
   }
 };

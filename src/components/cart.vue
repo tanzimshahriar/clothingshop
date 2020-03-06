@@ -22,7 +22,9 @@
                     <v-img class="mx-2 my-2" aspect-ratio="1" :src="returnImage(item)"></v-img>
                   </v-col>
                   <v-col class="ml-7" cols="4" sm="2" md="2" lg="2" xl="2">
-                    <v-row class="font-weight-medium">{{item.name}}</v-row>
+                    <v-row class="font-weight-medium">
+                      {{item.name}}
+                    </v-row>
                     <v-row v-if="item.sale && item.sale!==0">
                       <strike>${{item.price}}</strike>
                     </v-row>
@@ -32,9 +34,24 @@
                     <v-row v-else>${{returnPrice(item)}}</v-row>
                     
                   </v-col>
-                  <v-col cols="4" sm="2" md="2" lg="2" xl="2">Size</v-col>
-                  <v-col cols="4" sm="2" md="2" lg="2" xl="2">Quantity</v-col>
-                  <v-col cols="4" sm="2" md="2" lg="2" xl="2">Total Price</v-col>
+                  <v-col class="font-weight-medium mx-2" cols="3" sm="2" md="2" lg="2" xl="2">
+                    SIZE:XL
+                  </v-col>
+                  <v-col class="ml-2 mr-1 my-3" cols="4" sm="2" md="2" lg="2" xl="2">
+                    <v-row class="px-0 py-0">
+                      <v-card class="d-flex flex-col font-weight-medium" flat tile> QTY X {{item.cartQuantity}}
+                      </v-card>
+                    </v-row>
+                    <v-row class="px-0 py-0">
+                      <v-card class="d-flex flex-row" flat tile>
+                        <v-btn class="px-0 mr-1" left x-small outlined>Add</v-btn>
+                        <v-btn  class="px-0" right x-small outlined>Del</v-btn>
+                      </v-card>
+                    </v-row>
+                  </v-col>
+                  <v-col class="font-weight-medium" cols="3" sm="2" md="2" lg="2" xl="2">
+                   ${{(item.cartQuantity*parseFloat(returnPrice(item))).toFixed(2)}}
+                  </v-col>
                 </v-row>
                 
                   <v-btn right icon>
