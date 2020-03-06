@@ -7,7 +7,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    cart: {},
+    cart: [{type: Object}],
     user: {
       token: localStorage.getItem("JWT_TOKEN") || null,
       type: localStorage.getItem("ACCOUNT_TYPE") || null,
@@ -29,9 +29,6 @@ export default new Vuex.Store({
   getters: {
     loggedIn(state) {
       return state.user.token == null ? false : true;
-    },
-    getCart(state) {
-      return state.cart;
     },
     isAdmin(state) {
       return state.user.admin;

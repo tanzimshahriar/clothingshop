@@ -30,6 +30,7 @@ export default {
             type: "local"
           };
           context.commit("saveUser", payload);
+          //send a request to save users cart
           resolve(res);
         })
         .catch(err => {
@@ -48,6 +49,7 @@ export default {
             token,
             type: "facebook"
           });
+          //send a request to save users cart
           resolve(res);
         })
         .catch(err => {
@@ -66,6 +68,7 @@ export default {
             token,
             type: "google"
           });
+          //send a request to save users cart
           resolve(res);
         })
         .catch(err => {
@@ -82,9 +85,7 @@ export default {
       const url = "http://localhost:8080/checkuseradmin";
       axios
         .post(
-          url,
-          {},
-          {
+          url, {}, {
             headers
           }
         )
@@ -106,7 +107,7 @@ export default {
         "Content-Type": "multipart/form-data",
         Authorization: context.state.user.token
       };
-      var url = "http://localhost:8080/addproduct"
+      var url = "http://localhost:8080/addproduct";
       axios
         .post(url, data.formdata, {
           headers
@@ -132,5 +133,28 @@ export default {
           reject(err);
         });
     });
+  },
+  addItemToCart(context, item) {
+    return new Promise((resolve, reject) => {
+      //if user is logged in make a api req to add the item to users cart
+      if(context.getters.loggedin){
+        const url = "http://localhost:8080/getproducts";
+        axios
+          .get(url)
+          .then(res => {
+            resolve(res);
+          })
+          .catch(err => {
+            reject(err);
+          });
+      }
+      //if user isnt logged in save the item to cookies
+      else {
+        context.commit("addItemToCartInState", item)
+        context.commit("updateCartItemCookies", item)
+        resolve({message: item.name + " has been added to your cart"})
+      }
+    });
+      
   }
 };

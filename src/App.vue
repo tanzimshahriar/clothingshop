@@ -223,7 +223,7 @@ export default {
     Dialog
   },
   methods: {
-    hideMockWebsiteDialog(){
+    hideMockWebsiteDialog() {
       this.showMockWebsiteDialog = false;
     },
     confirmLogout() {
@@ -289,8 +289,12 @@ export default {
   mounted() {
     if (this.$store.getters.loggedIn) {
       this.$store.dispatch("checkAdmin", this.$store.state.user.token);
+      //getcart request to server and add it to state
+    } else{
+      //add the cart items to state from localstorage
+      this.$store.commit("addCartItemToStateFromLocalStorage");
     }
-    this.showMockWebsiteDialog = true;
+    //this.showMockWebsiteDialog = true;
   }
 };
 </script>

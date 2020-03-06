@@ -35,5 +35,17 @@ export default {
     state.snackbar.multiline = false;
     state.snackbar.timeout = 5000;
     state.snackbar.text = null;
+  },
+  addItemToCartInState(state, item) {
+    var cart = state.cart? state.cart : [];
+    cart.push(item)
+    state.cart = cart;
+  },
+  updateCartItemCookies(state) {
+    localStorage.removeItem("CART");
+    localStorage.setItem("CART",JSON.stringify(state.cart))
+  },
+  addCartItemToStateFromLocalStorage(state){
+    state.cart = JSON.parse(localStorage.getItem("CART"));
   }
 };
