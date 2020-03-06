@@ -26,12 +26,15 @@
           <span class="red-text font-weight-bold">${{ finalPrice }}</span>
           <span class="sale-text">(ON {{ item.sale }}% SALE)</span>
         </v-row>
+        <v-row v-else class="headline font-weight-light pb-2">
+          {{finalPrice.toFixed(2)}}
+        </v-row>
         <v-row>
           <v-card-subtitle class="overline px-0 mx-0 py-1">Description</v-card-subtitle>
         </v-row>
         <v-row class="font-weight-light headline pb-2">{{item.description}}</v-row>
         <v-row class="py-2">
-          <v-btn color="primary" @click="addItemToCart">Add to Cart</v-btn>
+          <v-btn small color="primary" @click="addItemToCart">Add to Cart</v-btn>
           <v-btn
             class="align-end ml-4"
             fab

@@ -2,10 +2,10 @@
   <v-col align-self="start" justify-self="start" cols="12">
     <v-row justify="center">
       <v-card-title class="font-weight-medium">
-        <v-icon left color="black">mdi-cart</v-icon>Shopping Cart
+        <v-icon left color="black">mdi-cart</v-icon>Your Cart
       </v-card-title>
     </v-row>
-    <v-row justify="center">
+    <v-row v-if="cart.length>0" justify="center">
       <v-col cols="12" sm="12" md="8" lg="8" xl="8" :class="paddingItemsContainer">
         <v-card class="px-2 py-1">
           <v-row justify="center">
@@ -18,13 +18,11 @@
             <v-layout fill-height>
               <v-flex no-gutters row align-self-center class="px-1">
                 <v-row align="center" no-gutters>
-                  <v-col justify="start" cols="5" sm="3" md="3" lg="3" xl="3">
+                  <v-col justify="start" cols="5" sm="2" md="2" lg="3" xl="3">
                     <v-img class="mx-2 my-2" aspect-ratio="1" :src="returnImage(item)"></v-img>
                   </v-col>
                   <v-col class="ml-7" cols="4" sm="2" md="2" lg="2" xl="2">
-                    <v-row class="font-weight-medium">
-                      {{item.name}}
-                    </v-row>
+                    <v-row class="font-weight-medium">{{item.name}}</v-row>
                     <v-row v-if="item.sale && item.sale!==0">
                       <strike>${{item.price}}</strike>
                     </v-row>
@@ -32,32 +30,55 @@
                       <span class="red-text">${{returnPrice(item)}}</span>
                     </v-row>
                     <v-row v-else>${{returnPrice(item)}}</v-row>
-                    
                   </v-col>
-                  <v-col class="font-weight-medium mx-2" cols="3" sm="2" md="2" lg="2" xl="2">
-                    SIZE:XL
-                  </v-col>
-                  <v-col class="ml-2 mr-1 my-3" cols="4" sm="2" md="2" lg="2" xl="2">
+                  <v-col
+                    class="font-weight-medium mx-2"
+                    cols="3"
+                    sm="2"
+                    md="2"
+                    lg="2"
+                    xl="2"
+                  >SIZE:XL</v-col>
+                  <v-col class="ml-2 mr-2 my-3" cols="4" sm="2" md="2" lg="2" xl="2">
                     <v-row class="px-0 py-0">
-                      <v-card class="d-flex flex-col font-weight-medium" flat tile> QTY X {{item.cartQuantity}}
-                      </v-card>
+                      <v-card
+                        class="d-flex flex-col font-weight-medium"
+                        flat
+                        tile
+                      >QTY X {{item.cartQuantity}}</v-card>
                     </v-row>
                     <v-row class="px-0 py-0">
                       <v-card class="d-flex flex-row" flat tile>
-                        <v-btn class="px-0 mr-1" left x-small outlined>Add</v-btn>
-                        <v-btn  class="px-0" right x-small outlined>Del</v-btn>
+                        <v-btn
+                          @click="increaseCartQuantity(item)"
+                          class="px-0 mr-1"
+                          left
+                          x-small
+                          outlined
+                        >Add</v-btn>
+                        <v-btn
+                          @click="decreaseCartQuantity(item)"
+                          class="px-0"
+                          right
+                          x-small
+                          outlined
+                        >Del</v-btn>
                       </v-card>
                     </v-row>
                   </v-col>
-                  <v-col class="font-weight-medium" cols="3" sm="2" md="2" lg="2" xl="2">
-                   ${{(item.cartQuantity*parseFloat(returnPrice(item))).toFixed(2)}}
-                  </v-col>
+                  <v-col
+                    class="font-weight-medium"
+                    cols="3"
+                    sm="2"
+                    md="2"
+                    lg="2"
+                    xl="2"
+                  >${{(item.cartQuantity*parseFloat(returnPrice(item))).toFixed(2)}}</v-col>
                 </v-row>
-                
-                  <v-btn right icon>
-                    <v-icon>mdi-close</v-icon>
-                  </v-btn>
-              
+
+                <v-btn right icon>
+                  <v-icon>mdi-close</v-icon>
+                </v-btn>
               </v-flex>
             </v-layout>
           </v-row>
@@ -97,6 +118,15 @@
           </v-row>
         </v-card>
       </v-col>
+    </v-row>
+    <v-row justify="center" v-else>
+      <v-card class="px-2 mx-8">
+        <v-card-title class="font-weight-light">
+          Your Cart is Empty<v-icon right light>mdi-emoticon-sad-outline</v-icon>
+        </v-card-title>
+        <v-card-subtitle>Items are stored temporarily in your browser as cookies.
+          Login to your account to save the items in your account</v-card-subtitle>
+      </v-card>
     </v-row>
     <Dialog
       :show="confirmPayment"
@@ -144,6 +174,45 @@ export default {
         : item.price && item.price != 0
         ? item.price.toFixed(2)
         : 0;
+    },
+    increaseCartQuantity(item) {
+      this.$store
+        .dispatch("addItemToCart", item)
+        .then(res => {
+          let payload = {
+            text: res.message,
+            timeout: 5000
+          };
+          this.$store.commit("showSnackbar", payload);
+        })
+        .catch(err => {
+          console.log(err);
+          let payload = {
+            text: "Failed to add item to cart. Try again.",
+            timeout: 5000
+          };
+          this.$store.commit("showSnackbar", payload);
+        });
+    },
+    decreaseCartQuantity(item) {
+      this.$store
+        .dispatch("decreaseItemQuantityFromCart", item)
+        .then(res => {
+          console.log(res)
+          let payload = {
+            text: res.message,
+            timeout: 5000
+          };
+          this.$store.commit("showSnackbar", payload);
+        })
+        .catch(err => {
+          console.log(err);
+          let payload = {
+            text: "Failed to add item to cart. Try again.",
+            timeout: 5000
+          };
+          this.$store.commit("showSnackbar", payload);
+        });
     },
     openConfirmPayment() {
       this.confirmPayment = true;
