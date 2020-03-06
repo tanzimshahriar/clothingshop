@@ -1,13 +1,12 @@
 <template>
   <v-col align-self="start" justify-self="start">
-    <v-row class="mx-2">
-      <v-btn text @click="goBack">
-        <v-icon color="black">mdi-arrow-left</v-icon>Go back
-      </v-btn>
-    </v-row>
-
-    <v-row>
+    <v-card class="d-flex flex-direction: row">
       <v-col cols="12" sm="12" md="7" lg="7" xl="7">
+        <v-row class="pl-3" align-content="left">
+        <v-btn small rounded text @click="goBack">
+          <v-icon color="black">mdi-arrow-left</v-icon>back
+        </v-btn>
+        </v-row>
         <v-carousel height="100%" hide-delimiter-background show-arrows-on-hover>
           <v-carousel-item contain v-for="(image, i) in item.images" :key="i">
             <v-img contain class="align-end .d-flex" aspect-ratio="1" :src="returnImg(image)"></v-img>
@@ -45,7 +44,7 @@
           </v-btn>
         </v-row>
       </v-col>
-    </v-row>
+    </v-card>
   </v-col>
 </template>
 
