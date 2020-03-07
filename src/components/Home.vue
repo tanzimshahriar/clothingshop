@@ -1,10 +1,10 @@
 <template>
-  <v-container class="px-0 mx-0 py-0 my-0" fluid fill-height>
+  <v-container class="px-0 mx-0 py-0 my-0" fluid>
     <v-layout fill-height no-gutters>
       <v-flex row no-gutters>
         <v-row no-gutters class="mt-1">
-          <v-col no-gutters class="grey lighten-4 py-2 px-2" align="center">
-            <FilterComponent v-if="!showProduct"/>
+          <v-col no-gutters class="py-2 px-2" align="center">
+            <FilterComponent v-if="!showProduct" />
             <v-flex
               v-if="!showProduct"
               no-gutters
@@ -14,7 +14,14 @@
               justify-center
               class="py-3"
             >
-              <v-flex v-if="loading" no-gutters row align-self-center align-center justify-center>
+              <v-flex
+                v-if="loading"
+                no-gutters
+                row
+                align-self-center
+                align-center
+                justify-center
+              >
                 <v-card
                   v-for="n in 10"
                   v-bind:key="n"
@@ -69,20 +76,25 @@
                 </v-img>
                 <v-spacer></v-spacer>
                 <v-card-subtitle
-                  class="pt-2 pb-0 px-0 mx-0 my-0 font-weight-light black--text"
-                >{{ product.name }}</v-card-subtitle>
+                  class="pt-2 pb-0 px-0 mx-0 my-0 font-weight-medium black--text"
+                  >{{ product.name }}</v-card-subtitle
+                >
                 <v-card-text
                   class="pt-0 pb-2 px-0 mx-0 my-0 font-weight-light black--text"
                   v-if="product.sale == 0"
-                >${{ product.price.toFixed(2) }}</v-card-text>
-                <v-card-text class="pt-0 pb-2 px-0 mx-0 my-0 font-weight-light black--text" v-else>
+                  >${{ product.price.toFixed(2) }}</v-card-text
+                >
+                <v-card-text
+                  class="pt-0 pb-2 px-0 mx-0 my-0 font-weight-light black--text"
+                  v-else
+                >
                   <strike>${{ product.price }}</strike>
                   <span class="red-text font-weight-bold">
                     ${{
-                    (
-                    product.price -
-                    product.price * (product.sale / 100)
-                    ).toFixed(2)
+                      (
+                        product.price -
+                        product.price * (product.sale / 100)
+                      ).toFixed(2)
                     }}
                   </span>
                   (ON {{ product.sale }}% SALE)
@@ -94,7 +106,6 @@
         </v-row>
       </v-flex>
     </v-layout>
-    
   </v-container>
 </template>
 

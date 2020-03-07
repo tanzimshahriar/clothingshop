@@ -36,21 +36,26 @@ export default {
     state.snackbar.timeout = 5000;
     state.snackbar.text = null;
   },
-  incrementItemQuantity(state, code){
-    var cart = state.cart;
-    for(var i = 0; i < cart.length; i++){
-      if(cart[i].code == code){
-        cart[i].cartQuantity = cart[i].cartQuantity + 1;
+  incrementItemQuantity(state, code) {
+    var items = state.user.cart.items;
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].code == code) {
+        items[i].cartQuantity = items[i].cartQuantity + 1;
+        var price =
+          items[i].sale && items[i].sale > 0
+            ? items[i].price - items[i].price * (items[i].sale / 100)
+            : items[i].price;
+        state.user.cart.subtotal = state.user.cart.subtotal + price;
         break;
       }
     }
-    state.cart = cart;
+    state.user.cart.items = items;
   },
   updateCartItemCookies(state) {
     localStorage.removeItem("CART");
-    localStorage.setItem("CART",JSON.stringify(state.cart))
+    localStorage.setItem("CART", JSON.stringify(state.user.cart));
   },
-  addCartItemToStateFromLocalStorage(state){
-    state.cart = JSON.parse(localStorage.getItem("CART"));
+  addCartItemToStateFromLocalStorage(state) {
+    state.user.cart = JSON.parse(localStorage.getItem("CART"));
   }
 };

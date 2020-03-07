@@ -2,14 +2,25 @@
   <v-app>
     <Snackbar />
     <v-toolbar fluid dense elevation="3" max-height="48px">
-      <v-app-bar-nav-icon @click.stop="sideNav = !sideNav" class="hidden-sm-and-up"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon
+        @click.stop="sideNav = !sideNav"
+        class="hidden-sm-and-up"
+      ></v-app-bar-nav-icon>
       <v-toolbar-title class="hidden-sm-and-up px-0 font-weight-light">
         <span class="text-uppercase">{{ this.$route.name }}</span>
       </v-toolbar-title>
       <v-toolbar-items class="hidden-xs-only">
-        <v-row row align-start align="center" overflow-y:auto class="flex-nowrap">
+        <v-row
+          row
+          align-start
+          align="center"
+          overflow-y:auto
+          class="flex-nowrap"
+        >
           <v-icon class="mx-2" color="black">mdi-aspect-ratio</v-icon>
-          <v-toolbar-title class="font-weight-light" color="black">Clothing Shop</v-toolbar-title>
+          <v-toolbar-title class="font-weight-light" color="black"
+            >Clothing Shop</v-toolbar-title
+          >
         </v-row>
       </v-toolbar-items>
       <v-spacer></v-spacer>
@@ -36,7 +47,14 @@
         >
           <v-icon left dark>mdi-format-list-bulleted</v-icon>Products
         </v-btn>
-        <v-btn elevation="1" text small to="/" exact-active-class="active" v-if="!admin">
+        <v-btn
+          elevation="1"
+          text
+          small
+          to="/"
+          exact-active-class="active"
+          v-if="!admin"
+        >
           <v-icon left>mdi-home</v-icon>Home
         </v-btn>
         <v-btn
@@ -98,14 +116,22 @@
     </v-toolbar>
     <v-navigation-drawer absolute v-model="sideNav">
       <v-list class="py-0">
-        <v-list-item v-if="loggedIn & admin" to="/admin" exact-active-class="active">
+        <v-list-item
+          v-if="loggedIn & admin"
+          to="/admin"
+          exact-active-class="active"
+        >
           <v-list-item-icon>
             <v-icon>mdi-view-dashboard-outline</v-icon>
           </v-list-item-icon>
           <v-list-item-content>Dashboard</v-list-item-content>
         </v-list-item>
 
-        <v-list-item v-if="loggedIn & admin" to="/admin/products" exact-active-class="active">
+        <v-list-item
+          v-if="loggedIn & admin"
+          to="/admin/products"
+          exact-active-class="active"
+        >
           <v-list-item-icon>
             <v-icon>mdi-format-list-bulleted</v-icon>
           </v-list-item-icon>
@@ -130,13 +156,21 @@
           </v-list-item-icon>
           <v-list-item-content>Signup</v-list-item-content>
         </v-list-item>
-        <v-list-item v-if="loggedIn" @click="logout" exact-active-class="active">
+        <v-list-item
+          v-if="loggedIn"
+          @click="logout"
+          exact-active-class="active"
+        >
           <v-list-item-icon>
             <v-icon>mdi-logout</v-icon>
           </v-list-item-icon>
           <v-list-item-content>Logout</v-list-item-content>
         </v-list-item>
-        <v-list-item v-if="loggedIn && !admin" to="/myaccount" exact-active-class="active">
+        <v-list-item
+          v-if="loggedIn && !admin"
+          to="/myaccount"
+          exact-active-class="active"
+        >
           <v-list-item-icon>
             <v-icon>mdi-account-circle</v-icon>
           </v-list-item-icon>
@@ -151,8 +185,8 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-content>
-      <v-container class="fill-height px-0 py-0 px-0 py-0" fluid>
+    <v-content class="grey lighten-5">
+      <v-container class="px-0 py-0 px-0 py-0" fluid>
         <router-view></router-view>
       </v-container>
       <Dialog
@@ -174,7 +208,7 @@
       />
     </v-content>
     <v-alert
-    v-if="showCookieConsent"
+      v-if="showCookieConsent"
       class="mx-0 my-0 text-center"
       elevation="4"
       colored-border
@@ -183,8 +217,14 @@
     >
       <v-card flat class=".d-flex flex-direction: row mx-4 my-0">
         <v-spacer></v-spacer>
-        <v-card-subtitle class="my-0 py-0">This website uses cookies to ensure you get the best experience on our website.</v-card-subtitle>
-        <v-spacer></v-spacer><v-btn @click="acceptCookies" small color="teal" outlined elevation="1">Accept</v-btn>
+        <v-card-subtitle class="my-0 py-0"
+          >This website uses cookies to ensure you get the best experience on
+          our website.</v-card-subtitle
+        >
+        <v-spacer></v-spacer
+        ><v-btn @click="acceptCookies" small color="teal" outlined elevation="1"
+          >Accept</v-btn
+        >
       </v-card>
     </v-alert>
     <FooterComponent v-if="!admin" />
@@ -273,7 +313,7 @@ export default {
   },
   mounted() {
     var consent = localStorage.getItem("has_cookie_consent");
-    consent? null : this.showCookieConsent = true;
+    consent ? null : (this.showCookieConsent = true);
     if (this.$store.getters.loggedIn) {
       this.$store.dispatch("checkAdmin", this.$store.state.user.token);
       //getcart request to server and add it to state
@@ -281,7 +321,7 @@ export default {
       //add the cart items to state from localstorage
       this.$store.commit("addCartItemToStateFromLocalStorage");
     }
-    this.showMockWebsiteDialog = true;
+    //this.showMockWebsiteDialog = true;
   }
 };
 </script>
