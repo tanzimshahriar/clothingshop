@@ -316,7 +316,9 @@ export default {
     consent ? null : (this.showCookieConsent = true);
     if (this.$store.getters.loggedIn) {
       this.$store.dispatch("checkAdmin", this.$store.state.user.token);
-      //getcart request to server and add it to state
+      //todo: getcart request to server and add it to state
+      //for now get it from local storage
+      this.$store.commit("addCartItemToStateFromLocalStorage");
     } else {
       //add the cart items to state from localstorage
       this.$store.commit("addCartItemToStateFromLocalStorage");

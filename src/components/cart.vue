@@ -126,7 +126,7 @@
             </v-col>
             <v-spacer></v-spacer>
             <v-col cols="6" class="pb-0">
-              <v-card-text class="py-0">${{ cart.subtotal }}</v-card-text>
+              <v-card-text class="py-0">${{ (cart.subtotal).toFixed(2) }}</v-card-text>
             </v-col>
             <v-col cols="6" class="py-0">
               <v-card-subtitle class="py-0">Shipping:</v-card-subtitle>
@@ -287,7 +287,24 @@ export default {
     },
     checkout() {
       //dispatch the action to call the api to confirm purchase
-      console.log("checkout called");
+      this.$store
+      .dispatch("checkout")
+      .then(res => {
+        let payload = {
+            text: res.message,
+            timeout: 5000
+          };
+          this.$forceUpdate();
+          this.$store.commit("showSnackbar", payload);
+      })
+      .catch(err => {
+          console.log(err);
+          let payload = {
+            text: "Failed to checkout. Try again.",
+            timeout: 5000
+          };
+          this.$store.commit("showSnackbar", payload);
+        });
       this.closeConfirmPayment();
     }
   },

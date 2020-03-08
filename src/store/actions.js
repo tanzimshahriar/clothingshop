@@ -191,7 +191,7 @@ export default {
             subtotal: price,
             shipping: 0
           }
-          context.state.user.cart = cart;          
+          context.state.user.cart = cart;
         }
       }
 
@@ -209,7 +209,7 @@ export default {
         reject("Admin cannot add items to cart");
       }
       //if user is logged in make a api req to decrease the item quantity from users cart
-      
+
       // if (context.getters.loggedin) {
       //   const url = "http://localhost:8080/decreaseitemquantityfromcart";
       //   axios
@@ -237,8 +237,8 @@ export default {
       }
       var price =
         cart.items[index].sale && cart.items[index].sale > 0 ?
-          cart.items[index].price - cart.items[index].price * (cart.items[index].sale / 100) :
-          cart.items[index].price;
+        cart.items[index].price - cart.items[index].price * (cart.items[index].sale / 100) :
+        cart.items[index].price;
       //2. if cartQuantity is more than one then decrease cart quantity
       if (numberOfCartQuantity > 1) {
         cart.items[index].cartQuantity = cart.items[index].cartQuantity - 1;
@@ -284,11 +284,11 @@ export default {
       }
       var price =
         cart.items[index].sale && cart.items[index].sale > 0 ?
-          cart.items[index].price - cart.items[index].price * (cart.items[index].sale / 100) :
-          cart.items[index].price;
+        cart.items[index].price - cart.items[index].price * (cart.items[index].sale / 100) :
+        cart.items[index].price;
       var cartQuantity = cart.items[index].cartQuantity;
       cart.items.splice(index, 1);
-      cart.subtotal = cart.subtotal - (price*cartQuantity);
+      cart.subtotal = cart.subtotal - (price * cartQuantity);
       context.state.user.cart = cart;
 
       context.commit("updateCartItemCookies");
@@ -296,6 +296,62 @@ export default {
         message: item.name + " has been removed from you cart"
       });
       // }
+    });
+  },
+  //send api request if successful empty cart in state and update the localstorage cart 
+  checkout(context) {
+    return new Promise((resolve, reject) => {
+      console.log("checkout")
+      if (context.getters.isAdmin) {
+        reject("Admin cannot add items to cart");
+      }
+
+      const cart = context.getters.cart;
+      const token = context.state.user.token;
+      console.log("token");
+      console.log(token)
+      //1. if logged in send authorization too
+      if(context.getters.loggedIn){
+        const url = "http://localhost:8080/orderloggedin";
+        const headers = {
+          "Content-Type": "application/json",
+          Authorization: token
+        };
+        
+        axios
+          .post(url, cart, {headers})
+          .then(res => {
+            if (res.data.result == "success") {
+              context.state.user.cart = [];
+              context.commit("updateCartItemCookies")
+              resolve({message: "You order has been placed"});
+            } else {
+              reject("Failed to complete order.");
+            }
+          })
+          .catch(err => {
+            console.log(err)
+            reject("Error. Failed to complete order.");
+          });
+
+      } else {
+        const url = "http://localhost:8080/order";        
+        axios
+          .post(url, cart)
+          .then(res => {
+            if (res.data.result == "success") {
+              context.state.user.cart = [];
+              context.commit("updateCartItemCookies")
+              resolve({message: "Your order has been placed"});
+            } else {
+              reject("Failed to complete order.");
+            }
+          })
+          .catch(err => {
+            console.log(err)
+            reject("Error. Failed to complete order.");
+          });
+      }
     });
   }
 };
