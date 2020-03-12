@@ -126,14 +126,18 @@
             </v-col>
             <v-spacer></v-spacer>
             <v-col cols="6" class="pb-0">
-              <v-card-text class="py-0">${{ (cart.subtotal).toFixed(2) }}</v-card-text>
+              <v-card-text class="py-0"
+                >${{ cart.subtotal.toFixed(2) }}</v-card-text
+              >
             </v-col>
             <v-col cols="6" class="py-0">
               <v-card-subtitle class="py-0">Shipping:</v-card-subtitle>
             </v-col>
             <v-spacer></v-spacer>
             <v-col cols="6" class="py-0">
-              <v-card-text v-if="cart.shippingPrice" class="py-0">${{ cart.shippingPrice }}.00</v-card-text>
+              <v-card-text v-if="cart.shippingPrice" class="py-0"
+                >${{ cart.shippingPrice }}.00</v-card-text
+              >
               <v-card-text v-else class="py-0">$0.00</v-card-text>
             </v-col>
             <v-col cols="6" class="pt-0">
@@ -142,12 +146,14 @@
             <v-spacer></v-spacer>
             <v-col v-if="cart.shippingPrice" cols="6" class="pt-0">
               <v-card-text class="py-0"
-                >${{ (cart.subtotal+cart.shippingPrice).toFixed(2) }}</v-card-text
+                >${{
+                  (cart.subtotal + cart.shippingPrice).toFixed(2)
+                }}</v-card-text
               >
             </v-col>
             <v-col v-else cols="6" class="pt-0">
               <v-card-text class="py-0"
-                >${{(cart.subtotal).toFixed(2) }}</v-card-text
+                >${{ cart.subtotal.toFixed(2) }}</v-card-text
               >
             </v-col>
           </v-row>
@@ -288,16 +294,16 @@ export default {
     checkout() {
       //dispatch the action to call the api to confirm purchase
       this.$store
-      .dispatch("checkout")
-      .then(res => {
-        let payload = {
+        .dispatch("checkout")
+        .then(res => {
+          let payload = {
             text: res.message,
             timeout: 5000
           };
           this.$forceUpdate();
           this.$store.commit("showSnackbar", payload);
-      })
-      .catch(err => {
+        })
+        .catch(err => {
           console.log(err);
           let payload = {
             text: "Failed to checkout. Try again.",

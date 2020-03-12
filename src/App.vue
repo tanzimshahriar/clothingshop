@@ -321,6 +321,7 @@ export default {
       this.$store.commit("addCartItemToStateFromLocalStorage");
     } else {
       //add the cart items to state from localstorage
+      //todo: check if the item is still available by making api call
       this.$store.commit("addCartItemToStateFromLocalStorage");
     }
     //this.showMockWebsiteDialog = true;

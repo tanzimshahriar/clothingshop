@@ -3,38 +3,60 @@
     <v-card class="d-flex flex-direction: row">
       <v-col cols="12" sm="12" md="7" lg="7" xl="7">
         <v-row class="pl-3">
-        <v-btn small rounded text @click="goBack">
-          <v-icon color="black">mdi-arrow-left</v-icon>back
-        </v-btn>
+          <v-btn small rounded text @click="goBack">
+            <v-icon color="black">mdi-arrow-left</v-icon>back
+          </v-btn>
         </v-row>
-        <v-carousel height="100%" hide-delimiter-background show-arrows-on-hover>
+        <v-carousel
+          height="100%"
+          hide-delimiter-background
+          show-arrows-on-hover
+        >
           <v-carousel-item contain v-for="(image, i) in item.images" :key="i">
-            <v-img contain class="align-start .d-flex" aspect-ratio="1" :src="returnImg(image)"></v-img>
+            <v-img
+              contain
+              class="align-start .d-flex"
+              aspect-ratio="1"
+              :src="returnImg(image)"
+            ></v-img>
           </v-carousel-item>
         </v-carousel>
       </v-col>
       <v-col class="px-6">
         <v-row>
-          <v-card-subtitle class="overline px-0 mx-0 py-1">Name</v-card-subtitle>
+          <v-card-subtitle class="overline px-0 mx-0 py-1"
+            >Name</v-card-subtitle
+          >
         </v-row>
-        <v-row class="font-weight-light headline pb-3">{{item.name}}</v-row>
+        <v-row class="font-weight-light headline pb-3">{{ item.name }}</v-row>
         <v-row>
-          <v-card-subtitle class="overline px-0 mx-0 py-1">Price</v-card-subtitle>
+          <v-card-subtitle class="overline px-0 mx-0 py-1"
+            >Price</v-card-subtitle
+          >
         </v-row>
-        <v-row v-if="item.sale && item.sale!=0" class="headline font-weight-light pb-2">
+        <v-row
+          v-if="item.sale && item.sale != 0"
+          class="headline font-weight-light pb-2"
+        >
           <strike>${{ item.price }}</strike>
           <span class="red-text font-weight-bold">${{ finalPrice }}</span>
           <span class="sale-text">(ON {{ item.sale }}% SALE)</span>
         </v-row>
         <v-row v-else class="headline font-weight-light pb-2">
-          {{finalPrice.toFixed(2)}}
+          {{ finalPrice.toFixed(2) }}
         </v-row>
         <v-row>
-          <v-card-subtitle class="overline px-0 mx-0 py-1">Description</v-card-subtitle>
+          <v-card-subtitle class="overline px-0 mx-0 py-1"
+            >Description</v-card-subtitle
+          >
         </v-row>
-        <v-row class="font-weight-light headline pb-2">{{item.description}}</v-row>
+        <v-row class="font-weight-light headline pb-2">{{
+          item.description
+        }}</v-row>
         <v-row class="py-2">
-          <v-btn small color="primary" @click="addItemToCart">Add to Cart</v-btn>
+          <v-btn small color="primary" @click="addItemToCart"
+            >Add to Cart</v-btn
+          >
           <v-btn
             class="align-end ml-4"
             fab

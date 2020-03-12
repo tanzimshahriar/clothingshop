@@ -5,18 +5,18 @@
         <v-row no-gutters class="mt-1">
           <v-col no-gutters class="py-2 px-2" align="center">
             <FilterComponent v-if="!showProduct" />
-            
-              <v-card class="px-2 mx-8 my-8 py-3"  v-if="loadingFailed">
-                <v-card-title class="font-weight-light justify-center">
-                  Loading failed<v-icon right light
-                    >mdi-emoticon-sad-outline</v-icon
-                  >
-                </v-card-title>
-                <v-card-subtitle
-                  >Please try loading the page again.</v-card-subtitle
+
+            <v-card class="px-2 mx-8 my-8 py-3" v-if="loadingFailed">
+              <v-card-title class="font-weight-light justify-center">
+                Loading failed<v-icon right light
+                  >mdi-emoticon-sad-outline</v-icon
                 >
-              </v-card>
-            
+              </v-card-title>
+              <v-card-subtitle
+                >Please try loading the page again.</v-card-subtitle
+              >
+            </v-card>
+
             <v-flex
               v-if="!showProduct"
               no-gutters
@@ -137,7 +137,7 @@ export default {
     tempimg: null,
     product: {},
     showProduct: false,
-    loadingFailed: false,
+    loadingFailed: false
   }),
   mounted() {
     this.updateProducts();

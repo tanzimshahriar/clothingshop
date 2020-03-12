@@ -85,7 +85,9 @@ export default {
       const url = "http://localhost:8080/checkuseradmin";
       axios
         .post(
-          url, {}, {
+          url,
+          {},
+          {
             headers
           }
         )
@@ -109,7 +111,7 @@ export default {
       };
       var url = "http://localhost:8080/addproduct";
       axios
-        .post(url, data.formdata, {
+        .post(url, {data}, {
           headers
         })
         .then(res => {
@@ -155,14 +157,13 @@ export default {
       // else {
       //1. add the item to cart in state
 
-
       var existingItem = false;
       var numberOfItems =
         context.getters.cart &&
         context.getters.cart.items &&
-        context.getters.cart.items.length ?
-        context.getters.cart.items.length :
-        0;
+        context.getters.cart.items.length
+          ? context.getters.cart.items.length
+          : 0;
       for (var i = 0; i < numberOfItems; i++) {
         if (item.code == context.getters.cart.items[i].code) {
           existingItem = true;
@@ -177,20 +178,21 @@ export default {
         //initialize cartQuantity so it can be used later
         item.cartQuantity = 1;
         var price =
-          item.sale && item.sale > 0 ?
-          item.price - item.price * (item.sale / 100) :
-          item.price;
+          item.sale && item.sale > 0
+            ? item.price - item.price * (item.sale / 100)
+            : item.price;
         if (numberOfItems != 0) {
           //if the cart isnt empty
           context.state.user.cart.items.push(item);
-          context.state.user.cart.subtotal = context.getters.cart.subtotal + price;
+          context.state.user.cart.subtotal =
+            context.getters.cart.subtotal + price;
         } else {
           //if cart is empty initialize the cart
           var cart = {
             items: [item],
             subtotal: price,
             shipping: 0
-          }
+          };
           context.state.user.cart = cart;
         }
       }
@@ -236,9 +238,10 @@ export default {
         }
       }
       var price =
-        cart.items[index].sale && cart.items[index].sale > 0 ?
-        cart.items[index].price - cart.items[index].price * (cart.items[index].sale / 100) :
-        cart.items[index].price;
+        cart.items[index].sale && cart.items[index].sale > 0
+          ? cart.items[index].price -
+            cart.items[index].price * (cart.items[index].sale / 100)
+          : cart.items[index].price;
       //2. if cartQuantity is more than one then decrease cart quantity
       if (numberOfCartQuantity > 1) {
         cart.items[index].cartQuantity = cart.items[index].cartQuantity - 1;
@@ -283,12 +286,13 @@ export default {
         }
       }
       var price =
-        cart.items[index].sale && cart.items[index].sale > 0 ?
-        cart.items[index].price - cart.items[index].price * (cart.items[index].sale / 100) :
-        cart.items[index].price;
+        cart.items[index].sale && cart.items[index].sale > 0
+          ? cart.items[index].price -
+            cart.items[index].price * (cart.items[index].sale / 100)
+          : cart.items[index].price;
       var cartQuantity = cart.items[index].cartQuantity;
       cart.items.splice(index, 1);
-      cart.subtotal = cart.subtotal - (price * cartQuantity);
+      cart.subtotal = cart.subtotal - price * cartQuantity;
       context.state.user.cart = cart;
 
       context.commit("updateCartItemCookies");
@@ -298,10 +302,10 @@ export default {
       // }
     });
   },
-  //send api request if successful empty cart in state and update the localstorage cart 
+  //send api request if successful empty cart in state and update the localstorage cart
   checkout(context) {
     return new Promise((resolve, reject) => {
-      console.log("checkout")
+      console.log("checkout");
       if (context.getters.isAdmin) {
         reject("Admin cannot add items to cart");
       }
@@ -309,47 +313,46 @@ export default {
       const cart = context.getters.cart;
       const token = context.state.user.token;
       console.log("token");
-      console.log(token)
+      console.log(token);
       //1. if logged in send authorization too
-      if(context.getters.loggedIn){
+      if (context.getters.loggedIn) {
         const url = "http://localhost:8080/orderloggedin";
         const headers = {
           "Content-Type": "application/json",
           Authorization: token
         };
-        
+
         axios
-          .post(url, cart, {headers})
+          .post(url, cart, { headers })
           .then(res => {
             if (res.data.result == "success") {
               context.state.user.cart = [];
-              context.commit("updateCartItemCookies")
-              resolve({message: "You order has been placed"});
+              context.commit("updateCartItemCookies");
+              resolve({ message: "You order has been placed" });
             } else {
               reject("Failed to complete order.");
             }
           })
           .catch(err => {
-            console.log(err)
+            console.log(err);
             reject("Error. Failed to complete order.");
           });
-
       } else {
-        const url = "http://localhost:8080/order";        
+        const url = "http://localhost:8080/order";
         axios
           .post(url, cart)
           .then(res => {
             if (res.data.result == "success") {
               context.state.user.cart = [];
-              context.commit("updateCartItemCookies")
-              resolve({message: "Your order has been placed"});
+              context.commit("updateCartItemCookies");
+              resolve({ message: "Your order has been placed" });
             } else {
-              reject("Failed to complete order.");
+              reject("Network Error. Failed to complete order.");
             }
           })
           .catch(err => {
-            console.log(err)
-            reject("Error. Failed to complete order.");
+            console.log(err);
+            reject("Network Error. Failed to complete order.");
           });
       }
     });
