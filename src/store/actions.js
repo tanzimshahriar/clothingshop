@@ -111,9 +111,13 @@ export default {
       };
       var url = "http://localhost:8080/addproduct";
       axios
-        .post(url, {data}, {
-          headers
-        })
+        .post(
+          url,
+          { data },
+          {
+            headers
+          }
+        )
         .then(res => {
           //returns the response to the addProduct action call
           resolve(res);

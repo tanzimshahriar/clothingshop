@@ -324,7 +324,7 @@ export default {
       //todo: check if the item is still available by making api call
       this.$store.commit("addCartItemToStateFromLocalStorage");
     }
-    //this.showMockWebsiteDialog = true;
+    this.showMockWebsiteDialog = true;
   }
 };
 </script>
