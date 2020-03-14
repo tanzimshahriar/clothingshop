@@ -1,52 +1,70 @@
 <template>
   <v-col cols="12">
-    <v-row align="center" justify="center" ><v-card-title class="font-weight-medium">Orders</v-card-title></v-row>
+    <v-row align="center" justify="center"
+      ><v-card-title class="font-weight-medium">Orders</v-card-title></v-row
+    >
     <v-row class="mx-0 my-0 px-0 py-0">
       <v-card-text v-if="loading">Loading</v-card-text>
       <v-col v-else :class="expansionPanelClass" justify-self="center">
         <v-expansion-panels>
           <v-expansion-panel v-for="(order, index) in orders" :key="index">
             <v-expansion-panel-header>
-              <v-col class="mx-0 my-0 py-0 px-0" align-self="center" justify-self="center">
-                <v-row justify="center" class="mx-0 mb-2 py-0 px-0 overline">Order id#{{order._id}}</v-row>
+              <v-col
+                class="mx-0 my-0 py-0 px-0"
+                align-self="center"
+                justify-self="center"
+              >
+                <v-row justify="center" class="mx-0 mb-2 py-0 px-0 overline"
+                  >Order id#{{ order._id }}</v-row
+                >
                 <v-row class="mx-0 my-0 py-0 px-0">
                   <v-col class="mx-0 my-0 py-0 px-0">
                     <v-row class="px-1 py-1">
-                      {{
-                      getDate(order.time)
-                      }}
+                      {{ getDate(order.time) }}
                     </v-row>
-                    <v-row  class="px-1 py-1">
-                      {{
-                      getTime(order.time)
-                      }}
+                    <v-row class="px-1 py-1">
+                      {{ getTime(order.time) }}
                     </v-row>
                   </v-col>
                   <v-col class="mx-0 my-0 py-0 px-0">
                     <v-row class="px-1 py-2 my-0 mx-0" justify="end">
                       Total: ${{
-                    (order.subtotal + order.shippingPrice).toFixed(2)
-                    }}
+                        (order.subtotal + order.shippingPrice).toFixed(2)
+                      }}
                     </v-row>
                   </v-col>
                 </v-row>
               </v-col>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-              <v-card flat class=".d-flex flex-direction: column px-1 py-1 mx-0 my-0"  v-for="(item, i) in order.items" :key="i">
+              <v-card
+                flat
+                class=".d-flex flex-direction: column px-1 py-1 mx-0 my-0"
+                v-for="(item, i) in order.items"
+                :key="i"
+              >
                 <v-divider class="my-2"></v-divider>
-                <v-row justify="center" class="title font-weight-light">{{item.name}}</v-row>
+                <v-row justify="center" class="title font-weight-light">{{
+                  item.name
+                }}</v-row>
                 <v-row>
-                  <v-card-subtitle>Price: ${{getPrice(item).toFixed(2)}}</v-card-subtitle>
-                  <v-card-subtitle>QTY X {{item.cartQuantity}}</v-card-subtitle>
-                  <v-card-subtitle>Subtotal: ${{(getPrice(item)*item.cartQuantity).toFixed(2)}}</v-card-subtitle>
+                  <v-card-subtitle
+                    >Price: ${{ getPrice(item).toFixed(2) }}</v-card-subtitle
+                  >
+                  <v-card-subtitle
+                    >QTY X {{ item.cartQuantity }}</v-card-subtitle
+                  >
+                  <v-card-subtitle
+                    >Subtotal: ${{
+                      (getPrice(item) * item.cartQuantity).toFixed(2)
+                    }}</v-card-subtitle
+                  >
                 </v-row>
               </v-card>
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
       </v-col>
-      
     </v-row>
   </v-col>
 </template>
@@ -66,17 +84,18 @@ export default {
         "Content-Type": "application/json",
         Authorization: this.$store.state.user.token
       };
-      const url = "http://localhost:8080/getorders";
+      const url = "https://server-261022.appspot.com/getorders";
       axios
         .get(url, { headers })
         .then(res => {
           this.orders = res.data;
-          console.log(this.orders);
           this.loading = false;
         })
         .catch(err => {
-          console.log(err);
+          //eslint-disable
+          throw(err);
           //show sncakbar that item hasnt been deleted
+          //eslint-enable
         });
     },
     getDate(datetime) {
@@ -95,8 +114,8 @@ export default {
         : item.price;
     }
   },
-  computed:{
-    expansionPanelClass(){
+  computed: {
+    expansionPanelClass() {
       switch (this.$vuetify.breakpoint.name) {
         case "xs":
           return "py-0 my-0";

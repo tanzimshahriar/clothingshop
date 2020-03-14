@@ -3,7 +3,7 @@ import router from "../router";
 export default {
   signup(context, payload) {
     return new Promise((resolve, reject) => {
-      const url = "http://localhost:8080/signup";
+      const url = "https://server-261022.appspot.com/signup";
       axios
         .post(url, payload)
         .then(res => {
@@ -21,7 +21,7 @@ export default {
   },
   login(context, payload) {
     return new Promise((resolve, reject) => {
-      const url = "http://localhost:8080/login";
+      const url = "https://server-261022.appspot.com/login";
       axios
         .post(url, payload)
         .then(res => {
@@ -40,7 +40,7 @@ export default {
   },
   fbLogin(context, payload) {
     return new Promise((resolve, reject) => {
-      const url = "http://localhost:8080/oauth/facebook";
+      const url = "https://server-261022.appspot.com/oauth/facebook";
       axios
         .post(url, payload)
         .then(res => {
@@ -59,7 +59,7 @@ export default {
   },
   googleLogin(context, payload) {
     return new Promise((resolve, reject) => {
-      const url = "http://localhost:8080/oauth/google";
+      const url = "https://server-261022.appspot.com/oauth/google";
       axios
         .post(url, payload)
         .then(res => {
@@ -82,7 +82,7 @@ export default {
         "Content-Type": "application/json",
         Authorization: token
       };
-      const url = "http://localhost:8080/checkuseradmin";
+      const url = "https://server-261022.appspot.com/checkuseradmin";
       axios
         .post(
           url,
@@ -109,7 +109,7 @@ export default {
         "Content-Type": "multipart/form-data",
         Authorization: context.state.user.token
       };
-      var url = "http://localhost:8080/addproduct";
+      var url = "https://server-261022.appspot.com/addproduct";
       axios
         .post(
           url,
@@ -129,7 +129,7 @@ export default {
   },
   getProducts() {
     return new Promise((resolve, reject) => {
-      const url = "http://localhost:8080/getproducts";
+      const url = "https://server-261022.appspot.com/getproducts";
       axios
         .get(url)
         .then(res => {
@@ -233,7 +233,6 @@ export default {
       var cart = context.getters.cart;
       var index = -1;
       var numberOfCartQuantity = -1;
-      console.log(cart);
       for (var i = 0; i < cart.items.length; i++) {
         if (item.code == cart.items[i].code) {
           index = i;
@@ -309,18 +308,15 @@ export default {
   //send api request if successful empty cart in state and update the localstorage cart
   checkout(context) {
     return new Promise((resolve, reject) => {
-      console.log("checkout");
       if (context.getters.isAdmin) {
         reject("Admin cannot add items to cart");
       }
 
       const cart = context.getters.cart;
       const token = context.state.user.token;
-      console.log("token");
-      console.log(token);
       //1. if logged in send authorization too
       if (context.getters.loggedIn) {
-        const url = "http://localhost:8080/orderloggedin";
+        const url = "https://server-261022.appspot.com/orderloggedin";
         const headers = {
           "Content-Type": "application/json",
           Authorization: token
@@ -338,11 +334,10 @@ export default {
             }
           })
           .catch(err => {
-            console.log(err);
-            reject("Error. Failed to complete order.");
+            reject("Error. Failed to complete order.", err);
           });
       } else {
-        const url = "http://localhost:8080/order";
+        const url = "https://server-261022.appspot.com/order";
         axios
           .post(url, cart)
           .then(res => {
@@ -355,8 +350,7 @@ export default {
             }
           })
           .catch(err => {
-            console.log(err);
-            reject("Network Error. Failed to complete order.");
+            reject("Network Error. Failed to complete order.", err);
           });
       }
     });
