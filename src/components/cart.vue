@@ -6,7 +6,7 @@
       </v-card-title>
     </v-row>
     <v-row
-      v-if="cartItems && cartItems.length && cartItems.length > 0"
+      v-if="cartItems && cartItems.length && cartItems.length > 0 && !loading"
       justify="center"
     >
       <v-col
@@ -177,7 +177,7 @@
       </v-card>
     </v-row>
     <v-row justify="center" v-if="loading">
-      LOADING
+      LOADINGbbmbmnbnmbmnbnmbmnbnmbmbmnbnmbmnbmnbm
     </v-row>
     <Dialog
       :show="confirmPayment"
@@ -210,59 +210,68 @@ export default {
     cartIsEmpty: true
   }),
   mounted() {
-    this.updateCart();
-    this.loading = false;
+    this.updateCart()
+      .then(res => {
+        this.loading = false;
+      })
+      .catch(err => {
+        this.loading = false;
+        this.loadingFailed = true;
+        console.log(err);
+      });
   },
   methods: {
     updateCart() {
-      this.loading = true;
-      //set local cart and subtotal to empty first
-      var tempItems = [];
-      var tempSubtotal = 0;
+      return new Promise((resolve, reject) => {
+        this.loading = true;
+        //set local cart and subtotal to empty first
+        var tempItems = [];
+        var tempSubtotal = 0;
 
-      //if the cart is not empty
-      if (this.cart.items && this.cart.items.length != 0) {
-        this.cartIsEmpty = false;
+        //if the cart is not empty
+        if (this.cart.items && this.cart.items.length != 0) {
+          this.cartIsEmpty = false;
 
-        //for each item in cart
-        //1 get images and prices from api and save it to cartItems
-        //2 update subtotal price
-        this.cart.items.forEach(item => {
-          const url =
-            process.env.NODE_ENV === "production"
-              ? process.env.VUE_APP_API_URL + "/getproducts"
-              : "http://localhost:8080/getproducts";
-          const params = new URLSearchParams();
-          params.append("code", item.code);
-          axios
-            .get(url, { params })
-            .then(res => {
-              var tempItem = res.data.product;
-              var price =
-                tempItem.sale && tempItem.sale > 0
-                  ? tempItem.price - tempItem.price * (tempItem.sale / 100)
-                  : tempItem.price;
-              console.log("price" + price);
-              console.log("cart Quantty");
-              console.log(item.cartQuantity);
-              tempItem.cartQuantity = item.cartQuantity;
-              tempItems.push(tempItem);
-              tempSubtotal = tempSubtotal + price * item.cartQuantity;
-              console.log("subtotal" + tempSubtotal);
-              this.items = tempItems;
-              this.subtotal = tempSubtotal;
-            })
-            .catch(err => {
-              console.log(err);
-            });
-        });
-      } else {
-        //if the cart is empty then set cartItems to empty
-        this.cartIsEmpty = true;
-        this.items = [];
-        this.loading = false;
-        this.subtotal = 0;
-      }
+          //for each item in cart
+          //1 get images and prices from api and save it to cartItems
+          //2 update subtotal price
+          this.cart.items.forEach(item => {
+            const url =
+              process.env.NODE_ENV === "production"
+                ? process.env.VUE_APP_API_URL + "/getproducts"
+                : "http://localhost:8080/getproducts";
+            const params = new URLSearchParams();
+            params.append("code", item.code);
+            axios
+              .get(url, { params })
+              .then(res => {
+                var tempItem = res.data.product;
+                var price =
+                  tempItem.sale && tempItem.sale > 0
+                    ? tempItem.price - tempItem.price * (tempItem.sale / 100)
+                    : tempItem.price;
+              
+                tempItem.cartQuantity = item.cartQuantity;
+                tempItems.push(tempItem);
+                tempSubtotal = tempSubtotal + price * item.cartQuantity;
+              
+                this.items = tempItems;
+                this.subtotal = tempSubtotal;
+              })
+              .catch(err => {
+                console.log(err);
+                reject(err);
+              });
+          });
+        } else {
+          //if the cart is empty then set cartItems to empty
+          this.cartIsEmpty = true;
+          this.items = [];
+          this.loading = false;
+          this.subtotal = 0;
+        }
+        resolve(true);
+      });
     },
     returnImage(file) {
       if (file.images) {
@@ -286,6 +295,7 @@ export default {
         : 0;
     },
     increaseCartQuantity(item) {
+      this.loading = true;
       this.$store
         .dispatch("addItemToCart", item)
         .then(res => {
@@ -293,8 +303,16 @@ export default {
             text: res.message,
             timeout: 5000
           };
-          this.updateCart();
-          this.loading = false;
+          this.updateCart()
+            .then(res => {
+              this.$store.commit("showSnackbar", payload);
+              this.loading = false;
+            })
+            .catch(err => {
+              this.loading = false;
+              this.loadingFailed = true;
+              console.log(err);
+            });
         })
         .catch(err => {
           console.log(err);
@@ -302,10 +320,10 @@ export default {
             text: "Failed to add item to cart. Try again.",
             timeout: 5000
           };
-          this.$store.commit("showSnackbar", payload);
         });
     },
     decreaseCartQuantity(item) {
+      this.loading = true;
       this.$store
         .dispatch("decreaseItemQuantityFromCart", item)
         .then(res => {
@@ -313,8 +331,16 @@ export default {
             text: res.message,
             timeout: 5000
           };
-          this.updateCart();
-          this.loading = false;
+          this.updateCart()
+            .then(res => {
+              this.loading = false;
+              this.$store.commit("showSnackbar", payload);
+            })
+            .catch(err => {
+              this.loading = false;
+              this.loadingFailed = true;
+              console.log(err);
+            });
         })
         .catch(err => {
           console.log(err);
@@ -322,10 +348,10 @@ export default {
             text: "Failed to add item to cart. Try again.",
             timeout: 5000
           };
-          this.$store.commit("showSnackbar", payload);
         });
     },
     deleteItemFromCart(item) {
+      this.loading = true;
       this.$store
         .dispatch("deleteItemFromCart", item)
         .then(res => {
@@ -333,8 +359,18 @@ export default {
             text: res.message,
             timeout: 5000
           };
-          this.updateCart();
-          this.loading = false;
+          //eslint-disable
+          this.updateCart()
+            .then(res => {
+              this.$store.commit("showSnackbar", payload);
+              this.loading = false;
+            })
+            //eslint-enable
+            .catch(err => {
+              this.loading = false;
+              this.loadingFailed = true;
+              console.log(err);
+            });
         })
         .catch(err => {
           console.log(err);
@@ -342,7 +378,6 @@ export default {
             text: "Failed to delete item from cart. Try again.",
             timeout: 5000
           };
-          this.$store.commit("showSnackbar", payload);
         });
     },
     openConfirmPayment() {
