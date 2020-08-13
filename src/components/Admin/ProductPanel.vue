@@ -256,8 +256,6 @@ export default {
       data.append("description", item.description);
       data.append("price", item.price);
       item.sale ? data.append("sale", item.sale) : null;
-      //console.log(JSON.stringify(this.deletedOldImages));
-
       deletedOldImages.length == 0
         ? null
         : deletedOldImages.length == 1

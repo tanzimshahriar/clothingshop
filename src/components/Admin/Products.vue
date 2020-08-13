@@ -202,7 +202,7 @@ export default {
       var payload = {
         code: this.itemToDelete.code
       };
-      const url = "http://localhost:8080/deleteproduct";
+      const url = "https://server-261022.appspot.com/deleteproduct";
       axios
         .post(url, payload, { headers })
         .then(res => {

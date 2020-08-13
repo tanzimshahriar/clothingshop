@@ -1,11 +1,24 @@
 <template>
-  <v-container class="px-0 mx-0 py-0 my-0" fluid fill-height>
+  <v-container class="px-0 mx-0 py-0 my-0" fluid>
     <v-layout fill-height no-gutters>
       <v-flex row no-gutters>
         <v-row no-gutters class="mt-1">
-          <v-col no-gutters class="grey lighten-4 py-2 px-2" align="center">
-            <FilterComponent />
+          <v-col no-gutters class="py-2 px-2" align="center">
+            <FilterComponent v-if="!showProduct" />
+
+            <v-card class="px-2 mx-8 my-8 py-3" v-if="loadingFailed">
+              <v-card-title class="font-weight-light justify-center">
+                Loading failed<v-icon right light
+                  >mdi-emoticon-sad-outline</v-icon
+                >
+              </v-card-title>
+              <v-card-subtitle
+                >Please try loading the page again.</v-card-subtitle
+              >
+            </v-card>
+
             <v-flex
+              v-if="!showProduct"
               no-gutters
               row
               align-self-center
@@ -51,6 +64,7 @@
                 :height="cardHeight"
                 :width="cardWidth"
                 elevation="1"
+                @click="openProduct(product)"
               >
                 <v-img
                   v-if="product.images && product.images.length >= 1"
@@ -66,6 +80,7 @@
                       light
                       small
                       color="white"
+                      @click.stop="productHearted(product)"
                     >
                       <v-icon color="black">mdi-heart-outline</v-icon>
                     </v-btn>
@@ -73,7 +88,7 @@
                 </v-img>
                 <v-spacer></v-spacer>
                 <v-card-subtitle
-                  class="pt-2 pb-0 px-0 mx-0 my-0 font-weight-light black--text"
+                  class="pt-2 pb-0 px-0 mx-0 my-0 font-weight-medium black--text"
                   >{{ product.name }}</v-card-subtitle
                 >
                 <v-card-text
@@ -98,6 +113,7 @@
                 </v-card-text>
               </v-card>
             </v-flex>
+            <Item v-if="showProduct" :item="product" @close="closeItem" />
           </v-col>
         </v-row>
       </v-flex>
@@ -107,16 +123,21 @@
 
 <script>
 import FilterComponent from "./FilterComponent";
+import Item from "./Item";
 export default {
   name: "home",
   inject: ["theme"],
   components: {
-    FilterComponent
+    FilterComponent,
+    Item
   },
   data: () => ({
     products: [],
     loading: true,
-    tempimg: null
+    tempimg: null,
+    product: {},
+    showProduct: false,
+    loadingFailed: false
   }),
   mounted() {
     this.updateProducts();
@@ -132,6 +153,8 @@ export default {
           // this.getImageOfProduct(0);
         })
         .catch(err => {
+          this.loading = false;
+          this.loadingFailed = true;
           console.log(err);
         });
     },
@@ -144,6 +167,17 @@ export default {
       var img = new Image();
       img.src = image;
       return img.src;
+    },
+    openProduct(product) {
+      this.product = product;
+      this.showProduct = true;
+    },
+    productHearted(product) {
+      console.log("hearted product: ");
+      console.log(product.name);
+    },
+    closeItem() {
+      this.showProduct = false;
     }
   },
   computed: {

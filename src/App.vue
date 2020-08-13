@@ -185,8 +185,8 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-main>
-      <v-container class="fill-height px-0 py-0 px-0 py-0" fluid>
+    <v-main class="grey lighten-5">
+      <v-container class="px-0 py-0 px-0 py-0" fluid>
         <router-view></router-view>
       </v-container>
       <Dialog
@@ -207,6 +207,26 @@
         @click2="cancelLogout"
       />
     </v-main>
+    <v-alert
+      v-if="showCookieConsent"
+      class="mx-0 my-0 text-center"
+      elevation="4"
+      colored-border
+      border="left"
+      color="teal"
+    >
+      <v-card flat class=".d-flex flex-direction: row mx-4 my-0">
+        <v-spacer></v-spacer>
+        <v-card-subtitle class="my-0 py-0"
+          >This website uses cookies to ensure you get the best experience on
+          our website.</v-card-subtitle
+        >
+        <v-spacer></v-spacer
+        ><v-btn @click="acceptCookies" small color="teal" outlined elevation="1"
+          >Accept</v-btn
+        >
+      </v-card>
+    </v-alert>
     <FooterComponent v-if="!admin" />
   </v-app>
 </template>
@@ -225,6 +245,10 @@ export default {
   methods: {
     hideMockWebsiteDialog() {
       this.showMockWebsiteDialog = false;
+    },
+    acceptCookies() {
+      localStorage.setItem("has_cookie_consent", true);
+      this.showCookieConsent = false;
     },
     confirmLogout() {
       this.showConfirmLogout = true;
@@ -254,7 +278,8 @@ export default {
     return {
       sideNav: false,
       showConfirmLogout: false,
-      showMockWebsiteDialog: false
+      showMockWebsiteDialog: false,
+      showCookieConsent: false
     };
   },
   computed: {
@@ -287,8 +312,17 @@ export default {
     }
   },
   mounted() {
+    var consent = localStorage.getItem("has_cookie_consent");
+    consent ? null : (this.showCookieConsent = true);
     if (this.$store.getters.loggedIn) {
       this.$store.dispatch("checkAdmin", this.$store.state.user.token);
+      //todo: getcart request to server and add it to state
+      //for now get it from local storage
+      this.$store.commit("addCartItemToStateFromLocalStorage");
+    } else {
+      //add the cart items to state from localstorage
+      //todo: check if the item is still available by making api call
+      this.$store.commit("addCartItemToStateFromLocalStorage");
     }
     this.showMockWebsiteDialog = true;
   }

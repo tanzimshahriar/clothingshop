@@ -7,13 +7,15 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    cart: {},
     user: {
       token: localStorage.getItem("JWT_TOKEN") || null,
       type: localStorage.getItem("ACCOUNT_TYPE") || null,
       email: "",
       name: "",
-      admin: false
+      admin: false,
+      cart: {
+        items: []
+      }
     },
     snackbar: {
       visible: false,
@@ -30,11 +32,11 @@ export default new Vuex.Store({
     loggedIn(state) {
       return state.user.token == null ? false : true;
     },
-    getCart(state) {
-      return state.cart;
-    },
     isAdmin(state) {
       return state.user.admin;
+    },
+    cart(state) {
+      return state.user.cart;
     }
   },
   mutations,

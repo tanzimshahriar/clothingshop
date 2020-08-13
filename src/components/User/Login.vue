@@ -40,14 +40,14 @@
           <v-divider class="divider"></v-divider>
           <v-card-text align="center">Or</v-card-text>
           <v-layout class="my-4" column align-center>
-            <GoogleLogin
+            <!-- <GoogleLogin
               class="mb-2"
               :params="params"
               :onSuccess="onSuccessGoogleLogin"
               :onFailure="onFailureGoogleLogin"
               :renderParams="renderParams"
               >Login
-            </GoogleLogin>
+            </GoogleLogin> -->
             <v-btn
               width="204"
               class="white--text"
@@ -66,13 +66,12 @@
 </template>
 
 <script>
-// import facebookLogin from "./facebook/facebook-login";
 import { loadFbSdk, fbLogin } from "./facebook/helpers";
-import GoogleLogin from "vue-google-login";
+//import GoogleLogin from "vue-google-login";
 export default {
   name: "login",
   components: {
-    GoogleLogin
+    // GoogleLogin
   },
   data: () => ({
     email: "",
