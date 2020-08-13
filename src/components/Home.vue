@@ -2,8 +2,9 @@
   <v-container class="px-0 mx-0 py-0 my-0" fluid>
     <v-layout fill-height no-gutters>
       <v-flex row no-gutters>
-        <v-row no-gutters class="mt-1">
-          <v-col no-gutters class="py-2 px-2" align="center">
+        <v-row no-gutters>
+          <v-col no-gutters class="pb-2" align="center">
+            <DropdownMenu/>
             <FilterComponent v-if="!showProduct" />
 
             <v-card class="px-2 mx-8 my-8 py-3" v-if="loadingFailed">
@@ -75,7 +76,7 @@
                   <v-flex row>
                     <v-spacer></v-spacer>
                     <v-btn
-                      class="mx-2 my-2 align-end"
+                      class="mx-2 my-2"
                       fab
                       light
                       small
@@ -123,12 +124,14 @@
 
 <script>
 import FilterComponent from "./FilterComponent";
+import DropdownMenu from "./DropdownMenu";
 import Item from "./Item";
 export default {
   name: "home",
   inject: ["theme"],
   components: {
     FilterComponent,
+    DropdownMenu,
     Item
   },
   data: () => ({
