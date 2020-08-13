@@ -213,6 +213,7 @@ export default {
     this.updateCart()
       .then(res => {
         this.loading = false;
+        console.log(res);
       })
       .catch(err => {
         this.loading = false;
@@ -250,11 +251,11 @@ export default {
                   tempItem.sale && tempItem.sale > 0
                     ? tempItem.price - tempItem.price * (tempItem.sale / 100)
                     : tempItem.price;
-              
+
                 tempItem.cartQuantity = item.cartQuantity;
                 tempItems.push(tempItem);
                 tempSubtotal = tempSubtotal + price * item.cartQuantity;
-              
+
                 this.items = tempItems;
                 this.subtotal = tempSubtotal;
               })
@@ -307,6 +308,7 @@ export default {
             .then(res => {
               this.$store.commit("showSnackbar", payload);
               this.loading = false;
+              console.log(res);
             })
             .catch(err => {
               this.loading = false;
@@ -320,6 +322,7 @@ export default {
             text: "Failed to add item to cart. Try again.",
             timeout: 5000
           };
+          this.$store.commit("showSnackbar", payload);
         });
     },
     decreaseCartQuantity(item) {
@@ -335,6 +338,7 @@ export default {
             .then(res => {
               this.loading = false;
               this.$store.commit("showSnackbar", payload);
+              console.log(res);
             })
             .catch(err => {
               this.loading = false;
@@ -348,6 +352,7 @@ export default {
             text: "Failed to add item to cart. Try again.",
             timeout: 5000
           };
+          this.$store.commit("showSnackbar", payload);
         });
     },
     deleteItemFromCart(item) {
@@ -364,6 +369,7 @@ export default {
             .then(res => {
               this.$store.commit("showSnackbar", payload);
               this.loading = false;
+              console.log(res);
             })
             //eslint-enable
             .catch(err => {
@@ -378,6 +384,7 @@ export default {
             text: "Failed to delete item from cart. Try again.",
             timeout: 5000
           };
+          this.$store.commit("showSnackbar", payload);
         });
     },
     openConfirmPayment() {
