@@ -106,7 +106,7 @@ export default {
         "Content-Type": "multipart/form-data",
         Authorization: context.state.user.token
       };
-      var url = "http://localhost:8080/addproduct"
+      var url = "http://localhost:8080/addproduct";
       axios
         .post(url, data.formdata, {
           headers

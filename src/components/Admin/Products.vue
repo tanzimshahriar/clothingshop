@@ -11,12 +11,12 @@
               class="pt-3"
               no-gutters
             >
-            <v-btn
+              <v-btn
                 @click="updateProducts"
                 class="mx-1"
                 x-small
                 dark
-                color=light
+                color="light"
               >
                 <v-icon small left light>mdi-reload</v-icon>Reload Products
               </v-btn>
@@ -49,7 +49,10 @@
               @cancel="closeProductPanel"
             />
             <v-card-text v-if="loading">Loading...</v-card-text>
-            <v-simple-table v-if="!showProductPanel && !loading && products.length!=0" class="my-3 mx-2">
+            <v-simple-table
+              v-if="!showProductPanel && !loading && products.length != 0"
+              class="my-3 mx-2"
+            >
               <template v-slot:default>
                 <thead>
                   <tr>
@@ -95,7 +98,9 @@
                 </tbody>
               </template>
             </v-simple-table>
-            <v-card-text v-if="noProducts && !showProductPanel && !loading">No Pruduct has been added.</v-card-text>
+            <v-card-text v-if="noProducts && !showProductPanel && !loading"
+              >No Pruduct has been added.</v-card-text
+            >
           </v-col>
         </v-col>
       </v-flex>
@@ -124,7 +129,7 @@ export default {
     showDeleteDialog: false,
     itemToDelete: null,
     products: [],
-    noProducts : false
+    noProducts: false
   }),
   mounted() {
     this.updateProducts();
@@ -137,7 +142,9 @@ export default {
         .then(res => {
           this.loading = false;
           this.products = res.data.products;
-          res.data.products.length==0? this.noProducts = true : this.noProducts = false;
+          res.data.products.length == 0
+            ? (this.noProducts = true)
+            : (this.noProducts = false);
         })
         .catch(err => {
           console.log(err);

@@ -185,7 +185,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-content>
+    <v-main>
       <v-container class="fill-height px-0 py-0 px-0 py-0" fluid>
         <router-view></router-view>
       </v-container>
@@ -206,7 +206,7 @@
         @click="logout"
         @click2="cancelLogout"
       />
-    </v-content>
+    </v-main>
     <FooterComponent v-if="!admin" />
   </v-app>
 </template>
@@ -223,7 +223,7 @@ export default {
     Dialog
   },
   methods: {
-    hideMockWebsiteDialog(){
+    hideMockWebsiteDialog() {
       this.showMockWebsiteDialog = false;
     },
     confirmLogout() {
