@@ -3,7 +3,7 @@ import router from "../router";
 export default {
   signup(context, payload) {
     return new Promise((resolve, reject) => {
-      const url = "https://server-261022.appspot.com/signup";
+      const url =  process.env.NODE_ENV === "production"? (process.env.VUE_APP_API_URL+"/signup") :"http://localhost:8080/signup";
       axios
         .post(url, payload)
         .then(res => {
@@ -21,7 +21,7 @@ export default {
   },
   login(context, payload) {
     return new Promise((resolve, reject) => {
-      const url = "https://server-261022.appspot.com/login";
+      const url =  process.env.NODE_ENV === "production"? (process.env.VUE_APP_API_URL + "/login") : "http://localhost:8080/login";
       axios
         .post(url, payload)
         .then(res => {
@@ -40,7 +40,7 @@ export default {
   },
   fbLogin(context, payload) {
     return new Promise((resolve, reject) => {
-      const url = "https://server-261022.appspot.com/oauth/facebook";
+      const url =  process.env.NODE_ENV === "production"? (process.env.VUE_APP_API_URL + "/oauth/facebook") :"http://localhost:8080/oauth/facebook";
       axios
         .post(url, payload)
         .then(res => {
@@ -59,7 +59,7 @@ export default {
   },
   googleLogin(context, payload) {
     return new Promise((resolve, reject) => {
-      const url = "https://server-261022.appspot.com/oauth/google";
+      const url =  process.env.NODE_ENV === "production"? (process.env.VUE_APP_API_URL + "/oauth/google") : "http://localhost:8080/oauth/google";
       axios
         .post(url, payload)
         .then(res => {
@@ -82,7 +82,7 @@ export default {
         "Content-Type": "application/json",
         Authorization: token
       };
-      const url = "https://server-261022.appspot.com/checkuseradmin";
+      const url =  process.env.NODE_ENV === "production"? (process.env.VUE_APP_API_URL + "/checkuseradmin") : "http://localhost:8080/checkuseradmin";
       axios
         .post(
           url,
@@ -109,7 +109,7 @@ export default {
         "Content-Type": "multipart/form-data",
         Authorization: context.state.user.token
       };
-      var url = "https://server-261022.appspot.com/addproduct";
+      const url =  process.env.NODE_ENV === "production"? (process.env.VUE_APP_API_URL + "/addproduct") : "http://localhost:8080/addproduct";
       axios
         .post(
           url,
@@ -129,7 +129,7 @@ export default {
   },
   getProducts() {
     return new Promise((resolve, reject) => {
-      const url = "https://server-261022.appspot.com/getproducts";
+      const url =  process.env.NODE_ENV === "production"? (process.env.VUE_APP_API_URL + "/getproducts") : "http://localhost:8080/getproducts";
       axios
         .get(url)
         .then(res => {

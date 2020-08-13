@@ -300,7 +300,6 @@ export default {
           }
         })
         .catch(err => {
-          console.log(err);
           let payload = {
             text: "Failed. " + err,
             timeout: 5000
