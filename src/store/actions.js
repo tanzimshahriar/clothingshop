@@ -3,7 +3,10 @@ import router from "../router";
 export default {
   signup(context, payload) {
     return new Promise((resolve, reject) => {
-      const url =  process.env.NODE_ENV === "production"? (process.env.VUE_APP_API_URL+"/signup") :"http://localhost:8080/signup";
+      const url =
+        process.env.NODE_ENV === "production"
+          ? process.env.VUE_APP_API_URL + "/signup"
+          : "http://localhost:8080/signup";
       axios
         .post(url, payload)
         .then(res => {
@@ -21,7 +24,10 @@ export default {
   },
   login(context, payload) {
     return new Promise((resolve, reject) => {
-      const url =  process.env.NODE_ENV === "production"? (process.env.VUE_APP_API_URL + "/login") : "http://localhost:8080/login";
+      const url =
+        process.env.NODE_ENV === "production"
+          ? process.env.VUE_APP_API_URL + "/login"
+          : "http://localhost:8080/login";
       axios
         .post(url, payload)
         .then(res => {
@@ -40,7 +46,10 @@ export default {
   },
   fbLogin(context, payload) {
     return new Promise((resolve, reject) => {
-      const url =  process.env.NODE_ENV === "production"? (process.env.VUE_APP_API_URL + "/oauth/facebook") :"http://localhost:8080/oauth/facebook";
+      const url =
+        process.env.NODE_ENV === "production"
+          ? process.env.VUE_APP_API_URL + "/oauth/facebook"
+          : "http://localhost:8080/oauth/facebook";
       axios
         .post(url, payload)
         .then(res => {
@@ -59,7 +68,10 @@ export default {
   },
   googleLogin(context, payload) {
     return new Promise((resolve, reject) => {
-      const url =  process.env.NODE_ENV === "production"? (process.env.VUE_APP_API_URL + "/oauth/google") : "http://localhost:8080/oauth/google";
+      const url =
+        process.env.NODE_ENV === "production"
+          ? process.env.VUE_APP_API_URL + "/oauth/google"
+          : "http://localhost:8080/oauth/google";
       axios
         .post(url, payload)
         .then(res => {
@@ -82,7 +94,10 @@ export default {
         "Content-Type": "application/json",
         Authorization: token
       };
-      const url =  process.env.NODE_ENV === "production"? (process.env.VUE_APP_API_URL + "/checkuseradmin") : "http://localhost:8080/checkuseradmin";
+      const url =
+        process.env.NODE_ENV === "production"
+          ? process.env.VUE_APP_API_URL + "/checkuseradmin"
+          : "http://localhost:8080/checkuseradmin";
       axios
         .post(
           url,
@@ -109,7 +124,10 @@ export default {
         "Content-Type": "multipart/form-data",
         Authorization: context.state.user.token
       };
-      const url =  process.env.NODE_ENV === "production"? (process.env.VUE_APP_API_URL + "/addproduct") : "http://localhost:8080/addproduct";
+      const url =
+        process.env.NODE_ENV === "production"
+          ? process.env.VUE_APP_API_URL + "/addproduct"
+          : "http://localhost:8080/addproduct";
       axios
         .post(
           url,
@@ -129,7 +147,10 @@ export default {
   },
   getProducts() {
     return new Promise((resolve, reject) => {
-      const url =  process.env.NODE_ENV === "production"? (process.env.VUE_APP_API_URL + "/getproducts") : "http://localhost:8080/getproducts";
+      const url =
+        process.env.NODE_ENV === "production"
+          ? process.env.VUE_APP_API_URL + "/getproducts"
+          : "http://localhost:8080/getproducts";
       axios
         .get(url)
         .then(res => {
@@ -174,28 +195,28 @@ export default {
           break;
         }
       }
+
+      //set the item to add to cart
+      var cartItem = {};
+      cartItem.code = item.code;
+      cartItem.name = item.name;
+
       if (existingItem) {
         //increment quantity of the item in cart and save to local storage
         context.commit("incrementItemQuantity", item.code);
         context.commit("updateCartItemCookies");
       } else {
         //initialize cartQuantity so it can be used later
-        item.cartQuantity = 1;
-        var price =
-          item.sale && item.sale > 0
-            ? item.price - item.price * (item.sale / 100)
-            : item.price;
+
+        cartItem.cartQuantity = 1;
+
         if (numberOfItems != 0) {
-          //if the cart isnt empty
-          context.state.user.cart.items.push(item);
-          context.state.user.cart.subtotal =
-            context.getters.cart.subtotal + price;
+          //if the cart isnt empty push the item to cart and add the price to cart
+          context.state.user.cart.items.push(cartItem);
         } else {
           //if cart is empty initialize the cart
           var cart = {
-            items: [item],
-            subtotal: price,
-            shipping: 0
+            items: [cartItem]
           };
           context.state.user.cart = cart;
         }
@@ -240,19 +261,12 @@ export default {
           break;
         }
       }
-      var price =
-        cart.items[index].sale && cart.items[index].sale > 0
-          ? cart.items[index].price -
-            cart.items[index].price * (cart.items[index].sale / 100)
-          : cart.items[index].price;
       //2. if cartQuantity is more than one then decrease cart quantity
       if (numberOfCartQuantity > 1) {
         cart.items[index].cartQuantity = cart.items[index].cartQuantity - 1;
-        cart.subtotal = cart.subtotal - price;
         context.state.user.cart = cart;
       } else {
         cart.items.splice(index, 1);
-        cart.subtotal = cart.subtotal - price;
         context.state.user.cart = cart;
       }
       context.commit("updateCartItemCookies");
@@ -288,14 +302,7 @@ export default {
           break;
         }
       }
-      var price =
-        cart.items[index].sale && cart.items[index].sale > 0
-          ? cart.items[index].price -
-            cart.items[index].price * (cart.items[index].sale / 100)
-          : cart.items[index].price;
-      var cartQuantity = cart.items[index].cartQuantity;
       cart.items.splice(index, 1);
-      cart.subtotal = cart.subtotal - price * cartQuantity;
       context.state.user.cart = cart;
 
       context.commit("updateCartItemCookies");
@@ -316,7 +323,10 @@ export default {
       const token = context.state.user.token;
       //1. if logged in send authorization too
       if (context.getters.loggedIn) {
-        const url = "https://server-261022.appspot.com/orderloggedin";
+        const url =
+          process.env.NODE_ENV === "production"
+            ? process.env.VUE_APP_API_URL + "/orderloggedin"
+            : "http://localhost:8080/orderloggedin";
         const headers = {
           "Content-Type": "application/json",
           Authorization: token
@@ -337,7 +347,10 @@ export default {
             reject("Error. Failed to complete order.", err);
           });
       } else {
-        const url = "https://server-261022.appspot.com/order";
+        const url =
+          process.env.NODE_ENV === "production"
+            ? process.env.VUE_APP_API_URL + "/order"
+            : "http://localhost:8080/order";
         axios
           .post(url, cart)
           .then(res => {

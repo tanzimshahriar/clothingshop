@@ -185,7 +185,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-content class="grey lighten-5">
+    <v-main class="grey lighten-5">
       <v-container class="px-0 py-0 px-0 py-0" fluid>
         <router-view></router-view>
       </v-container>
@@ -206,7 +206,7 @@
         @click="logout"
         @click2="cancelLogout"
       />
-    </v-content>
+    </v-main>
     <v-alert
       v-if="showCookieConsent"
       class="mx-0 my-0 text-center"

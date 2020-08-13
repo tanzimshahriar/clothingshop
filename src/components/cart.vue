@@ -6,7 +6,7 @@
       </v-card-title>
     </v-row>
     <v-row
-      v-if="cart && cart.items && cart.items.length && cart.items.length > 0"
+      v-if="cartItems && cartItems.length && cartItems.length > 0"
       justify="center"
     >
       <v-col
@@ -21,7 +21,7 @@
           <v-row justify="center">
             <v-card-title>Items</v-card-title>
           </v-row>
-          <v-row v-for="(item, i) in cart.items" :key="i">
+          <v-row v-for="(item, i) in cartItems" :key="i">
             <v-card-text class="px-0 py-0 mx-2 my-0">
               <v-divider></v-divider>
             </v-card-text>
@@ -127,7 +127,7 @@
             <v-spacer></v-spacer>
             <v-col cols="6" class="pb-0">
               <v-card-text class="py-0"
-                >${{ cart.subtotal.toFixed(2) }}</v-card-text
+                >${{ subtotalPrice.toFixed(2) }}</v-card-text
               >
             </v-col>
             <v-col cols="6" class="py-0">
@@ -135,8 +135,8 @@
             </v-col>
             <v-spacer></v-spacer>
             <v-col cols="6" class="py-0">
-              <v-card-text v-if="cart.shippingPrice" class="py-0"
-                >${{ cart.shippingPrice }}.00</v-card-text
+              <v-card-text v-if="shippingPrice" class="py-0"
+                >${{ shippingPrice }}.00</v-card-text
               >
               <v-card-text v-else class="py-0">$0.00</v-card-text>
             </v-col>
@@ -144,16 +144,14 @@
               <v-card-subtitle class="py-0">Total:</v-card-subtitle>
             </v-col>
             <v-spacer></v-spacer>
-            <v-col v-if="cart.shippingPrice" cols="6" class="pt-0">
+            <v-col v-if="shippingPrice" cols="6" class="pt-0">
               <v-card-text class="py-0"
-                >${{
-                  (cart.subtotal + cart.shippingPrice).toFixed(2)
-                }}</v-card-text
+                >${{ (subtotalPrice + shippingPrice).toFixed(2) }}</v-card-text
               >
             </v-col>
             <v-col v-else cols="6" class="pt-0">
               <v-card-text class="py-0"
-                >${{ cart.subtotal.toFixed(2) }}</v-card-text
+                >${{ subtotalPrice.toFixed(2) }}</v-card-text
               >
             </v-col>
           </v-row>
@@ -165,7 +163,7 @@
         </v-card>
       </v-col>
     </v-row>
-    <v-row justify="center" v-else>
+    <v-row v-if="cartIsEmpty && !loading">
       <v-card class="px-2 mx-8">
         <v-card-title class="font-weight-light">
           Your Cart is Empty<v-icon right light
@@ -177,6 +175,9 @@
           your account to save the items in your account</v-card-subtitle
         >
       </v-card>
+    </v-row>
+    <v-row justify="center" v-if="loading">
+      LOADING
     </v-row>
     <Dialog
       :show="confirmPayment"
@@ -192,6 +193,7 @@
 
 <script>
 import { mapGetters } from "vuex";
+import axios from "axios";
 import Dialog from "../views/CustomComponents/Dialog";
 export default {
   name: "Cart",
@@ -199,11 +201,69 @@ export default {
     Dialog
   },
   data: () => ({
-    subtotal: "",
-    shippingPrice: "10",
-    confirmPayment: false
+    confirmPayment: false,
+    items: [],
+    subtotal: 0,
+    shipping: 0,
+    loading: true,
+    loadingFailed: false,
+    cartIsEmpty: true
   }),
+  mounted() {
+    this.updateCart();
+    this.loading = false;
+  },
   methods: {
+    updateCart() {
+      this.loading = true;
+      //set local cart and subtotal to empty first
+      var tempItems = [];
+      var tempSubtotal = 0;
+
+      //if the cart is not empty
+      if (this.cart.items && this.cart.items.length != 0) {
+        this.cartIsEmpty = false;
+
+        //for each item in cart
+        //1 get images and prices from api and save it to cartItems
+        //2 update subtotal price
+        this.cart.items.forEach(item => {
+          const url =
+            process.env.NODE_ENV === "production"
+              ? process.env.VUE_APP_API_URL + "/getproducts"
+              : "http://localhost:8080/getproducts";
+          const params = new URLSearchParams();
+          params.append("code", item.code);
+          axios
+            .get(url, { params })
+            .then(res => {
+              var tempItem = res.data.product;
+              var price =
+                tempItem.sale && tempItem.sale > 0
+                  ? tempItem.price - tempItem.price * (tempItem.sale / 100)
+                  : tempItem.price;
+              console.log("price" + price);
+              console.log("cart Quantty");
+              console.log(item.cartQuantity);
+              tempItem.cartQuantity = item.cartQuantity;
+              tempItems.push(tempItem);
+              tempSubtotal = tempSubtotal + price * item.cartQuantity;
+              console.log("subtotal" + tempSubtotal);
+              this.items = tempItems;
+              this.subtotal = tempSubtotal;
+            })
+            .catch(err => {
+              console.log(err);
+            });
+        });
+      } else {
+        //if the cart is empty then set cartItems to empty
+        this.cartIsEmpty = true;
+        this.items = [];
+        this.loading = false;
+        this.subtotal = 0;
+      }
+    },
     returnImage(file) {
       if (file.images) {
         var image =
@@ -233,8 +293,8 @@ export default {
             text: res.message,
             timeout: 5000
           };
-          this.$forceUpdate();
-          this.$store.commit("showSnackbar", payload);
+          this.updateCart();
+          this.loading = false;
         })
         .catch(err => {
           console.log(err);
@@ -253,8 +313,8 @@ export default {
             text: res.message,
             timeout: 5000
           };
-          this.$forceUpdate();
-          this.$store.commit("showSnackbar", payload);
+          this.updateCart();
+          this.loading = false;
         })
         .catch(err => {
           console.log(err);
@@ -273,8 +333,8 @@ export default {
             text: res.message,
             timeout: 5000
           };
-          this.$forceUpdate();
-          this.$store.commit("showSnackbar", payload);
+          this.updateCart();
+          this.loading = false;
         })
         .catch(err => {
           console.log(err);
@@ -316,6 +376,15 @@ export default {
   },
   computed: {
     ...mapGetters(["cart"]),
+    cartItems() {
+      return this.items;
+    },
+    subtotalPrice() {
+      return this.subtotal;
+    },
+    shippingPrice() {
+      return this.shipping;
+    },
     paddingItemsContainer() {
       switch (this.$vuetify.breakpoint.name) {
         case "xs":
@@ -347,6 +416,11 @@ export default {
         default:
           return "mx-1";
       }
+    }
+  },
+  watch: {
+    cart: function() {
+      this.updateCart();
     }
   }
 };

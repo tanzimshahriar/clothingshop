@@ -14,9 +14,7 @@ export default new Vuex.Store({
       name: "",
       admin: false,
       cart: {
-        items: [],
-        subtotal: 0,
-        shipping: 10
+        items: []
       }
     },
     snackbar: {

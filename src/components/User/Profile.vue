@@ -93,7 +93,7 @@ export default {
         })
         .catch(err => {
           //eslint-disable
-          throw(err);
+          throw err;
           //show sncakbar that item hasnt been deleted
           //eslint-enable
         });

@@ -41,11 +41,10 @@ export default {
     for (var i = 0; i < items.length; i++) {
       if (items[i].code == code) {
         items[i].cartQuantity = items[i].cartQuantity + 1;
-        var price =
-          items[i].sale && items[i].sale > 0
-            ? items[i].price - items[i].price * (items[i].sale / 100)
-            : items[i].price;
-        state.user.cart.subtotal = state.user.cart.subtotal + price;
+        // var price =
+        //   items[i].sale && items[i].sale > 0
+        //     ? items[i].price - items[i].price * (items[i].sale / 100)
+        //     : items[i].price;
         break;
       }
     }
