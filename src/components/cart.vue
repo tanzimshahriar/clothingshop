@@ -6,7 +6,7 @@
       </v-card-title>
     </v-row>
     <v-row
-      v-if="cartItems && cartItems.length && cartItems.length > 0 && !loading"
+      v-if="cartItems && cartItems.length && cartItems.length > 0 && !isLoading"
       justify="center"
     >
       <v-col
@@ -163,7 +163,7 @@
         </v-card>
       </v-col>
     </v-row>
-    <v-row v-if="cartIsEmpty && !loading">
+    <v-row v-if="cartIsEmpty && !isLoading">
       <v-card class="px-2 mx-8">
         <v-card-title class="font-weight-light">
           Your Cart is Empty<v-icon right light
@@ -176,8 +176,29 @@
         >
       </v-card>
     </v-row>
-    <v-row justify="center" v-if="loading">
-      LOADINGbbmbmnbnmbmnbnmbmnbnmbmbmnbnmbmnbmnbm
+    <v-row justify="center" v-show="isLoading">
+      <v-col
+        cols="12"
+        sm="12"
+        md="8"
+        lg="8"
+        xl="8"
+        :class="paddingItemsContainer"
+      >
+        <v-card class="px-2 py-1">
+          <v-row justify="center" align="center" class="my-0 py-0">
+            <v-card-title class="mb-0 pb-0">Items</v-card-title>
+          </v-row>
+          <v-row class="px-0 pt-0 pb-1 mx-0 my-0" align="start">
+            <v-text-field
+              class="px-0 mx-0 py-0 my-0"
+              color="primary"
+              loading
+              disabled
+            ></v-text-field>
+          </v-row>
+        </v-card>
+      </v-col>
     </v-row>
     <Dialog
       :show="confirmPayment"
@@ -205,32 +226,24 @@ export default {
     items: [],
     subtotal: 0,
     shipping: 0,
-    loading: true,
-    loadingFailed: false,
     cartIsEmpty: true
   }),
   mounted() {
-    this.updateCart()
-      .then(res => {
-        this.loading = false;
-        console.log(res);
-      })
-      .catch(err => {
-        this.loading = false;
-        this.loadingFailed = true;
-        console.log(err);
-      });
+    if (this.cart.items.length > 0) {
+      this.updateCart();
+    }
   },
   methods: {
     updateCart() {
       return new Promise((resolve, reject) => {
-        this.loading = true;
         //set local cart and subtotal to empty first
+        this.items = [];
         var tempItems = [];
         var tempSubtotal = 0;
 
         //if the cart is not empty
-        if (this.cart.items && this.cart.items.length != 0) {
+        if (this.cart && this.cart.items && this.cart.items.length != 0) {
+          console.log("Cart is not empty");
           this.cartIsEmpty = false;
 
           //for each item in cart
@@ -265,10 +278,10 @@ export default {
               });
           });
         } else {
+          console.log("CART IS EMPTY");
           //if the cart is empty then set cartItems to empty
           this.cartIsEmpty = true;
           this.items = [];
-          this.loading = false;
           this.subtotal = 0;
         }
         resolve(true);
@@ -296,7 +309,6 @@ export default {
         : 0;
     },
     increaseCartQuantity(item) {
-      this.loading = true;
       this.$store
         .dispatch("addItemToCart", item)
         .then(res => {
@@ -304,17 +316,8 @@ export default {
             text: res.message,
             timeout: 5000
           };
-          this.updateCart()
-            .then(res => {
-              this.$store.commit("showSnackbar", payload);
-              this.loading = false;
-              console.log(res);
-            })
-            .catch(err => {
-              this.loading = false;
-              this.loadingFailed = true;
-              console.log(err);
-            });
+          this.updateCart();
+          this.$store.commit("showSnackbar", payload);
         })
         .catch(err => {
           console.log(err);
@@ -334,17 +337,8 @@ export default {
             text: res.message,
             timeout: 5000
           };
-          this.updateCart()
-            .then(res => {
-              this.loading = false;
-              this.$store.commit("showSnackbar", payload);
-              console.log(res);
-            })
-            .catch(err => {
-              this.loading = false;
-              this.loadingFailed = true;
-              console.log(err);
-            });
+          this.updateCart();
+          this.$store.commit("showSnackbar", payload);
         })
         .catch(err => {
           console.log(err);
@@ -365,18 +359,8 @@ export default {
             timeout: 5000
           };
           //eslint-disable
-          this.updateCart()
-            .then(res => {
-              this.$store.commit("showSnackbar", payload);
-              this.loading = false;
-              console.log(res);
-            })
-            //eslint-enable
-            .catch(err => {
-              this.loading = false;
-              this.loadingFailed = true;
-              console.log(err);
-            });
+          this.updateCart();
+          this.$store.commit("showSnackbar", payload);
         })
         .catch(err => {
           console.log(err);
@@ -417,6 +401,9 @@ export default {
     }
   },
   computed: {
+    isLoading() {
+      return this.cart.items.length != this.items.length;
+    },
     ...mapGetters(["cart"]),
     cartItems() {
       return this.items;
