@@ -405,12 +405,13 @@ export default {
       const deletedOldImages = this.deletedOldImages;
 
       var isNewProduct = this.type == "add" ? true : false;
+      this.item._id? data.append("_id", item._id) : null;
       data.append("isNewProduct", isNewProduct);
       data.append("code", item.code);
       data.append("name", item.name);
       data.append("description", item.description);
       data.append("price", item.price);
-      data.append("gender", item.gender);
+      data.append("gender", JSON.stringify(item.gender));
       data.append("categories", item.categories);
       item.sale ? data.append("sale", item.sale) : null;
       deletedOldImages.length == 0
@@ -438,6 +439,7 @@ export default {
       data.append("imagescolors", JSON.stringify(colors));
 
       for (var pair of data.entries()) {
+        console.log(pair[0]);
         console.log(pair[1]);
       }
 
