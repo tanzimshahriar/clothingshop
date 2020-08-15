@@ -118,33 +118,6 @@ export default {
         });
     });
   },
-  addProduct(context, data) {
-    return new Promise((resolve, reject) => {
-      const headers = {
-        "Content-Type": "multipart/form-data",
-        Authorization: context.state.user.token
-      };
-      const url =
-        process.env.NODE_ENV === "production"
-          ? process.env.VUE_APP_API_URL + "/addproduct"
-          : "http://localhost:8080/addproduct";
-      axios
-        .post(
-          url,
-          { data },
-          {
-            headers
-          }
-        )
-        .then(res => {
-          //returns the response to the addProduct action call
-          resolve(res);
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
-  },
   getProducts() {
     return new Promise((resolve, reject) => {
       const url =

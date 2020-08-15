@@ -107,7 +107,7 @@
               contain
               width="100"
               height="100"
-              :src="returnImage(n.src)"
+              :src="returnImage(n)"
             >
               <v-btn
                 fab
@@ -243,7 +243,9 @@
     </v-layout>
   </v-card>
 </template>
+
 <script>
+import axios from "axios";
 export default {
   props: {
     type: {
@@ -399,21 +401,25 @@ export default {
       }
       this.item.images.splice(index, 1);
     },
-    makeApiRequestForSaveProduct() {
+    async makeApiRequestForSaveProduct() {
       const item = this.item;
       const data = new FormData();
       const deletedOldImages = this.deletedOldImages;
 
       var isNewProduct = this.type == "add" ? true : false;
-      this.item._id? data.append("_id", item._id) : null;
+      this.item._id ? data.append("_id", item._id) : null;
       data.append("isNewProduct", isNewProduct);
       data.append("code", item.code);
       data.append("name", item.name);
       data.append("description", item.description);
       data.append("price", item.price);
       data.append("gender", JSON.stringify(item.gender));
-      data.append("categories", item.categories);
-      item.sale ? data.append("sale", item.sale) : null;
+      data.append("categories", JSON.stringify(item.categories));
+      data.append(
+        "sizeAndQuantityAvailable",
+        JSON.stringify(item.sizeAndQuantityAvailable)
+      );
+      data.append("sale", item.sale);
       deletedOldImages.length == 0
         ? null
         : deletedOldImages.length == 1
@@ -422,31 +428,30 @@ export default {
             var deletedOldImage = Object.values(deletedOldImages)[key];
             data.append("deletedOldImages", deletedOldImage);
           });
-      data.append(
-        "sizeAndQuantityAvailable",
-        JSON.stringify(item.sizeAndQuantityAvailable)
-      );
-      var colors = [];
-      Object.keys(item.images).forEach(index => {
-        var image = Object.values(item.images)[index].src;
-        image.contentType ? null : data.append("images", image);
 
-        //add colors to colors array
-        item.images[index].color
-          ? colors.push(item.images[index].color)
-          : colors.push("none");
+      //add images to formdata
+      Object.keys(item.images).forEach(function(key) {
+        var image = Object.values(item.images)[key];
+        image.contentType ? null : data.append("images", image);
       });
-      data.append("imagescolors", JSON.stringify(colors));
 
       for (var pair of data.entries()) {
         console.log(pair[0]);
         console.log(pair[1]);
       }
 
-      this.$store
-        .dispatch("addProduct", { formdata: data })
+      const headers = {
+        Authorization: this.$store.state.user.token
+      };
+      const url =
+        process.env.NODE_ENV === "production"
+          ? process.env.VUE_APP_API_URL + "/addproduct"
+          : "http://localhost:8080/addproduct";
+      await axios
+        .post(url, data, {
+          headers
+        })
         .then(res => {
-          //show product added message with snackbar
           let payload = {
             text:
               this.type == "add"
@@ -467,12 +472,12 @@ export default {
           }
         })
         .catch(err => {
+          console.log(err);
           let payload = {
             text: "Failed. " + err,
             timeout: 5000
           };
           this.$store.commit("showSnackbar", payload);
-          //show error with snackbar
         });
     },
     saveProduct() {
@@ -493,7 +498,7 @@ export default {
           return;
         } else {
           this.fileError = "";
-          images.push({ src: files[i], color: "no color" });
+          images.push(files[i]);
         }
       }
       this.item.images = this.item.images.concat(images);
