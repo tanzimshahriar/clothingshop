@@ -185,8 +185,8 @@ export default {
       var existingItem = false;
       var numberOfItems =
         context.getters.cart &&
-          context.getters.cart.items &&
-          context.getters.cart.items.length
+        context.getters.cart.items &&
+        context.getters.cart.items.length
           ? context.getters.cart.items.length
           : 0;
       for (var i = 0; i < numberOfItems; i++) {

@@ -73,7 +73,8 @@
           >*Click to select categories for this item</v-card-subtitle
         >
         <v-card
-          class="d-flex align-content-space-around flex-wrap py-2" outlined
+          class="d-flex align-content-space-around flex-wrap py-2"
+          outlined
         >
           <div v-for="(category, index) in availableCategories" :key="index">
             <v-btn
@@ -185,7 +186,8 @@
           >*Click to select the sizes for this item</v-card-subtitle
         >
         <v-card
-          class="d-flex align-content-space-around flex-wrap py-2 mb-8" outlined
+          class="d-flex align-content-space-around flex-wrap py-2 mb-8"
+          outlined
         >
           <div v-for="(size, index) in availableSizes" :key="index">
             <v-btn
