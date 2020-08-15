@@ -4,7 +4,7 @@
       <v-flex row no-gutters>
         <v-row no-gutters>
           <v-col no-gutters class="pb-2" align="center">
-            <DropdownMenu/>
+            <DropdownMenu />
             <FilterComponent v-if="!showProduct" />
 
             <v-card class="px-2 mx-8 my-8 py-3" v-if="loadingFailed">

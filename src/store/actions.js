@@ -185,8 +185,8 @@ export default {
       var existingItem = false;
       var numberOfItems =
         context.getters.cart &&
-        context.getters.cart.items &&
-        context.getters.cart.items.length
+          context.getters.cart.items &&
+          context.getters.cart.items.length
           ? context.getters.cart.items.length
           : 0;
       for (var i = 0; i < numberOfItems; i++) {
@@ -366,6 +366,28 @@ export default {
             reject("Network Error. Failed to complete order.", err);
           });
       }
+    });
+  },
+  getSizes(context, size) {
+    return new Promise((resolve, reject) => {
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: context.state.user.token
+      };
+      const url =
+        process.env.NODE_ENV === "production"
+          ? process.env.VUE_APP_API_URL + "/getsizes"
+          : "http://localhost:8080/getsizes";
+      const params = new URLSearchParams();
+      size && size != "" ? params.append("code", size) : null;
+      axios
+        .get(url, { params, headers })
+        .then(res => {
+          resolve(res);
+        })
+        .catch(err => {
+          reject(err);
+        });
     });
   }
 };

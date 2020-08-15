@@ -60,7 +60,7 @@
                     <th class="text-left">Name</th>
                     <th class="text-left">Price</th>
                     <th class="text-left">Sale</th>
-                    <th class="text-left">Quantity</th>
+                    <th class="text-left">Available</th>
                     <th class="text-left">Orders</th>
                     <th v-if="edit" class="text-left">Actions</th>
                   </tr>
@@ -79,7 +79,7 @@
                     <td v-if="item.sale">{{ item.sale }}%</td>
                     <td v-if="!item.sale">None</td>
                     <td>10S,5M,0L</td>
-                    <td>{{ item.orders }}</td>
+                    <td>{{ item.orders.length }}</td>
                     <td>
                       <v-row>
                         <v-btn
@@ -158,30 +158,17 @@ export default {
       this.currentProduct = {
         name: "",
         code: "",
+        price: 0,
+        sale: 0,
         description: "",
-        quantity: [
-          {
-            size: "xxl",
-            number: null
-          },
-          {
-            size: "xl",
-            number: null
-          },
-          {
-            size: "l",
-            number: null
-          },
-          {
-            size: "m",
-            number: null
-          },
-          {
-            size: "s",
-            number: null
-          }
-        ],
-        images: []
+        sizeAndQuantityAvailable: [],
+        images: [],
+        gender: {
+          male: true,
+          female: true
+        },
+        // orders: [],
+        categories: []
       };
       this.openProductPanel(this.currentProduct);
     },
@@ -202,7 +189,10 @@ export default {
       var payload = {
         code: this.itemToDelete.code
       };
-      const url = "https://server-261022.appspot.com/deleteproduct";
+      const url =
+        process.env.NODE_ENV === "production"
+          ? process.env.VUE_APP_API_URL + "/deleteproduct"
+          : "http://localhost:8080/deleteproduct";
       axios
         .post(url, payload, { headers })
         .then(res => {

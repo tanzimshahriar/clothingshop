@@ -9,9 +9,9 @@
     >
       <v-flex no-gutters column :class="flexClass">
         <v-row justify="center" class="px-0 py-0 mx-0 my-0">
-          <v-card-title class="font-weight-light" primary-title>{{
-            header
-          }}</v-card-title>
+          <v-card-title class="font-weight-light" primary-title>
+            {{ header }}
+          </v-card-title>
         </v-row>
         <v-card-subtitle class="overline px-0 mx-0">Details</v-card-subtitle>
         <v-text-field
@@ -23,17 +23,26 @@
           type="text"
         />
         <v-text-field
-          :disabled="!showProductCode"
+          class="mb-2"
+          dense
+          label="Product Code"
+          :error-messages="codeError"
+          v-model="item.code"
+          type="text"
+        />
+        <v-text-field
+          v-if="type == 'edit'"
+          disabled
           class="mt-2"
           dense
           :error-messages="codeError"
-          v-model="item.code"
+          v-model="item._id"
           type="text"
         >
           <template v-slot:label>
             <div>
-              Product Code
-              <small>(Product code can't be changed)</small>
+              Product ID
+              <small>(Product id can't be changed)</small>
             </div>
           </template>
         </v-text-field>
@@ -64,7 +73,7 @@
               contain
               width="100"
               height="100"
-              :src="returnImage(n)"
+              :src="returnImage(n.src)"
             >
               <v-btn
                 fab
@@ -146,8 +155,8 @@
           tile
         >
           <v-card
-            v-for="n in item.quantity"
-            :key="n.size"
+            v-for="(n, i) in item.sizeAndQuantityAvailable"
+            :key="i"
             class="pr-4"
             tile
             flat
@@ -158,12 +167,12 @@
               type="number"
               step="any"
               min="0"
-              v-model="n.number"
+              v-model="n.quantityAvailable"
             >
               <template v-slot:label>
                 <div>
                   Quantity
-                  <small>{{ n.size }}</small>
+                  <small>{{ getSizeFromId(n.size) }}</small>
                 </div>
               </template>
             </v-text-field>
@@ -199,10 +208,30 @@ export default {
     descriptionError: "",
     priceError: "",
     imageError: "",
-    deletedOldImages: []
+    deletedOldImages: [],
+    availableSizes: []
   }),
-
   methods: {
+    // get all sizes from api
+    loadSizesFromApi() {
+      this.$store
+        .dispatch("getSizes")
+        .then(res => {
+          this.availableSizes = res.data.sizes;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    getSizeFromId(id) {
+      var name = "";
+      this.availableSizes.forEach(function(size) {
+        if (size._id == id) {
+          name = size.name;
+        }
+      });
+      return name == "" ? null : name;
+    },
     btnClicked() {
       if (!this.item.code || this.item.code == "") {
         this.codeError = "Product code can not be empty";
@@ -265,17 +294,19 @@ export default {
             data.append("deletedOldImages", deletedOldImage);
           });
 
-      Object.keys(item.quantity).forEach(function(key) {
-        var quantity = Object.values(item.quantity)[key];
-        data.append(
-          "size:" + quantity.size,
-          quantity.number ? quantity.number : 0
-        );
+      Object.keys(item.sizeAndQuantityAvailable).forEach(function(key) {
+        var quantity = Object.values(item.sizeAndQuantityAvailable)[key];
+        data.append("sizeAndQuantityAvailable", quantity);
       });
 
-      Object.keys(item.images).forEach(function(key) {
-        var image = Object.values(item.images)[key];
+      Object.keys(item.images).forEach(index => {
+        console.log(item.images[index]);
+        var image = Object.values(item.images[index].src);
         image.contentType ? null : data.append("images", image);
+
+        index.color
+          ? data.append("imagescolors", item.images[index].color)
+          : data.append("imagescolors", "none");
       });
       this.$store
         .dispatch("addProduct", { formdata: data })
@@ -296,6 +327,7 @@ export default {
               text: "Failed to add item. Try Again.",
               timeout: 5000
             };
+
             this.$store.commit("showSnackbar", errorPayload);
           }
         })
@@ -313,6 +345,7 @@ export default {
       this.$emit("click", this.item);
       //reload table
     },
+    //when a file or multiple files are updloaded, add it to this.items.images but no color is selected for all images
     onFileSelected(e) {
       var images = [];
       var files = e.target.files;
@@ -325,7 +358,7 @@ export default {
           return;
         } else {
           this.fileError = "";
-          images.push(files[i]);
+          images.push({ src: files[i], color: "no color" });
         }
       }
       this.item.images = this.item.images.concat(images);
@@ -361,6 +394,7 @@ export default {
   },
   mounted() {
     this.item = { ...this.product };
+    this.loadSizesFromApi();
   },
   computed: {
     header() {
@@ -384,9 +418,6 @@ export default {
         default:
           return "mx-2 my-2";
       }
-    },
-    showProductCode() {
-      return this.type == "add" ? true : false;
     }
   }
 };

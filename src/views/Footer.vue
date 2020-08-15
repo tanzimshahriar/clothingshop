@@ -32,7 +32,11 @@
           >
           <v-spacer></v-spacer>
           <v-layout row align-center>
-            <v-card-subtitle class="mx-4 my-0 py-0 px-0" v-for="(icon,i) in icons" :key="i">
+            <v-card-subtitle
+              class="mx-4 my-0 py-0 px-0"
+              v-for="(icon, i) in icons"
+              :key="i"
+            >
               <v-btn :href="icon.link" target="_blank" dark icon>
                 <v-icon size="24px">{{ icon.icon }}</v-icon>
               </v-btn>
@@ -43,7 +47,11 @@
           <strong class="subheading"
             >Get connected with us on social networks!</strong
           >
-          <v-card-subtitle v-for="(icon, i) in icons" :key="i" class="mx-4 my-0 py-0 px-0">
+          <v-card-subtitle
+            v-for="(icon, i) in icons"
+            :key="i"
+            class="mx-4 my-0 py-0 px-0"
+          >
             <v-btn :href="icon.link" target="_blank" dark icon>
               <v-icon size="24px">{{ icon.icon }}</v-icon>
             </v-btn>
@@ -71,7 +79,11 @@ export default {
     Dialog
   },
   data: () => ({
-    icons: [{icon: "mdi-facebook", link: process.env.VUE_APP_FB_LINK}, {icon: "mdi-twitter", link: process.env.VUE_APP_TWITTER_LINK}, {icon: "mdi-instagram", link: process.env.VUE_APP_INSTAGRAM_LINK}],
+    icons: [
+      { icon: "mdi-facebook", link: process.env.VUE_APP_FB_LINK },
+      { icon: "mdi-twitter", link: process.env.VUE_APP_TWITTER_LINK },
+      { icon: "mdi-instagram", link: process.env.VUE_APP_INSTAGRAM_LINK }
+    ],
     privacy: false,
     tAndC: false,
     contactUs: false
@@ -89,6 +101,7 @@ export default {
     showPrivacy() {
       this.privacy = true;
     },
+
     showTAndC() {
       this.tAndC = true;
     },
