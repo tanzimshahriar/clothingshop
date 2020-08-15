@@ -52,7 +52,40 @@
           label="Description"
           v-model="item.description"
         />
-
+        <v-card-subtitle class="overline px-0 mx-0"
+          >Item for Gender</v-card-subtitle
+        >
+        <div class="gender-row" v-if="item.gender">
+          <v-checkbox
+            v-model="item.gender.male"
+            label="Male"
+            color="primary"
+            class="pr-4"
+          ></v-checkbox>
+          <v-checkbox
+            v-model="item.gender.female"
+            label="Female"
+            color="primary"
+          ></v-checkbox>
+        </div>
+        <v-card-subtitle class="overline px-0 mx-0">Category</v-card-subtitle>
+        <v-card-subtitle class="pt-0"
+          >*Click to select categories for this item</v-card-subtitle
+        >
+        <v-card
+          class="d-flex align-content-space-around flex-wrap py-2" outlined
+        >
+          <div v-for="(category, index) in availableCategories" :key="index">
+            <v-btn
+              @click="selectCategory(category._id)"
+              small
+              class="mx-3 my-2"
+              :color="isCategorySelected(category._id)"
+            >
+              {{ category.name }}
+            </v-btn>
+          </div>
+        </v-card>
         <v-card-subtitle class="overline px-0 mx-0">Images</v-card-subtitle>
         <v-card
           class="d-flex align-content-space-around flex-wrap px-0"
@@ -148,9 +181,28 @@
         </v-card>
 
         <v-card-subtitle class="overline">Quantity and Size</v-card-subtitle>
-
+        <v-card-subtitle class="pt-0"
+          >*Click to select the sizes for this item</v-card-subtitle
+        >
         <v-card
-          class="d-flex align-content-space-around flex-wrap px-0"
+          class="d-flex align-content-space-around flex-wrap py-2 mb-8" outlined
+        >
+          <div v-for="(size, index) in availableSizes" :key="index">
+            <v-btn
+              @click="selectSize(size._id)"
+              small
+              class="mx-3 my-2"
+              :color="isSizeSelected(size._id)"
+            >
+              {{ size.name }}
+            </v-btn>
+          </div>
+        </v-card>
+        <v-card-subtitle class="pt-0"
+          >*fill the quantity of each size</v-card-subtitle
+        >
+        <v-card
+          class="d-flex align-content-space-around flex-wrap px-0 mt-8"
           flat
           tile
         >
@@ -181,7 +233,9 @@
         <v-card-actions class="mt-0 px-0 mb-6">
           <v-spacer></v-spacer>
           <v-btn @click="cancel">Cancel</v-btn>
-          <v-btn color="primary" @click="btnClicked">{{ btnLabel }}</v-btn>
+          <v-btn color="primary" @click="submitBtnClicked">{{
+            btnLabel
+          }}</v-btn>
         </v-card-actions>
       </v-flex>
     </v-layout>
@@ -209,9 +263,21 @@ export default {
     priceError: "",
     imageError: "",
     deletedOldImages: [],
-    availableSizes: []
+    availableSizes: [],
+    availableCategories: []
   }),
   methods: {
+    //get all categories from api
+    loadCategoriesFromApi() {
+      this.$store
+        .dispatch("getCategories")
+        .then(res => {
+          this.availableCategories = res.data.categories;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
     // get all sizes from api
     loadSizesFromApi() {
       this.$store
@@ -232,7 +298,65 @@ export default {
       });
       return name == "" ? null : name;
     },
-    btnClicked() {
+    //if category is selected return primary color otherwise return light
+    isCategorySelected(id) {
+      var selected = false;
+      this.item.categories.forEach(function(category) {
+        if (category === id) {
+          selected = true;
+        }
+      });
+      return selected ? "primary" : "light";
+    },
+
+    //if size is selected return primary color otherwise return light
+    isSizeSelected(id) {
+      var selected = false;
+      this.item.sizeAndQuantityAvailable.forEach(function(size) {
+        if (size.size === id) {
+          selected = true;
+        }
+      });
+      return selected ? "primary" : "light";
+    },
+
+    selectCategory(id) {
+      //check if the category already exists
+      var exists = false;
+      var index = -1;
+      this.item.categories.forEach(function(category, i) {
+        if (category === id) {
+          exists = true;
+          index = i;
+        }
+      });
+      //if it exists then delete it, otherwise create the category
+      if (exists) {
+        this.item.categories.splice(index, 1);
+      } else {
+        this.item.categories.push(id);
+      }
+    },
+    selectSize(id) {
+      //check if the category already exists
+      var exists = false;
+      var index = -1;
+      this.item.sizeAndQuantityAvailable.forEach(function(size, i) {
+        if (size.size === id) {
+          exists = true;
+          index = i;
+        }
+      });
+      //if it exists then delete it, otherwise add the size for the item
+      if (exists) {
+        this.item.sizeAndQuantityAvailable.splice(index, 1);
+      } else {
+        var temp = { size: id, quantityAvailable: 0 };
+        this.item.sizeAndQuantityAvailable.push(temp);
+      }
+    },
+
+    submitBtnClicked() {
       if (!this.item.code || this.item.code == "") {
         this.codeError = "Product code can not be empty";
       } else {
@@ -284,6 +408,8 @@ export default {
       data.append("name", item.name);
       data.append("description", item.description);
       data.append("price", item.price);
+      data.append("gender", item.gender);
+      data.append("categories", item.categories);
       item.sale ? data.append("sale", item.sale) : null;
       deletedOldImages.length == 0
         ? null
@@ -293,21 +419,26 @@ export default {
             var deletedOldImage = Object.values(deletedOldImages)[key];
             data.append("deletedOldImages", deletedOldImage);
           });
-
-      Object.keys(item.sizeAndQuantityAvailable).forEach(function(key) {
-        var quantity = Object.values(item.sizeAndQuantityAvailable)[key];
-        data.append("sizeAndQuantityAvailable", quantity);
-      });
-
+      data.append(
+        "sizeAndQuantityAvailable",
+        JSON.stringify(item.sizeAndQuantityAvailable)
+      );
+      var colors = [];
       Object.keys(item.images).forEach(index => {
-        console.log(item.images[index]);
-        var image = Object.values(item.images[index].src);
+        var image = Object.values(item.images)[index].src;
         image.contentType ? null : data.append("images", image);
 
-        index.color
-          ? data.append("imagescolors", item.images[index].color)
-          : data.append("imagescolors", "none");
+        //add colors to colors array
+        item.images[index].color
+          ? colors.push(item.images[index].color)
+          : colors.push("none");
       });
+      data.append("imagescolors", JSON.stringify(colors));
+
+      for (var pair of data.entries()) {
+        console.log(pair[1]);
+      }
+
       this.$store
         .dispatch("addProduct", { formdata: data })
         .then(res => {
@@ -395,6 +526,7 @@ export default {
   mounted() {
     this.item = { ...this.product };
     this.loadSizesFromApi();
+    this.loadCategoriesFromApi();
   },
   computed: {
     header() {
@@ -422,3 +554,11 @@ export default {
   }
 };
 </script>
+<style scoped>
+.gender-row {
+  display: flex;
+  flex-direction: row;
+  padding: 0;
+  margin: 0;
+}
+</style>

@@ -389,5 +389,27 @@ export default {
           reject(err);
         });
     });
+  },
+  getCategories(context, category) {
+    return new Promise((resolve, reject) => {
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: context.state.user.token
+      };
+      const url =
+        process.env.NODE_ENV === "production"
+          ? process.env.VUE_APP_API_URL + "/getcategories"
+          : "http://localhost:8080/getcategories";
+      const params = new URLSearchParams();
+      category && category != "" ? params.append("code", category) : null;
+      axios
+        .get(url, { params, headers })
+        .then(res => {
+          resolve(res);
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
   }
 };
