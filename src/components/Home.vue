@@ -4,8 +4,8 @@
       <v-flex fill-height row no-gutters>
         <v-row no-gutters align-self="start">
           <v-col no-gutters class="pb-2" align="center">
-            <DropdownMenu />
-            <FilterComponent v-if="!showProduct" />
+            <!-- <DropdownMenu /> -->
+            <!-- <FilterComponent v-if="!showProduct" /> -->
 
             <v-card class="px-2 mx-8 my-8 py-3" v-if="loadingFailed">
               <v-card-title class="font-weight-light justify-center">
@@ -116,7 +116,7 @@
               </v-card>
             </v-flex>
             <Item v-if="showProduct" :item="product" @close="closeItem" />
-            <v-row justify="center" align="end" v-if="!loading">
+            <v-row justify="center" align="end" v-if="!loading && !showProduct">
           <v-pagination
             class="py-2"
             v-model="currentPage"
@@ -131,15 +131,15 @@
 </template>
 
 <script>
-import FilterComponent from "./FilterComponent";
-import DropdownMenu from "./DropdownMenu";
+// import FilterComponent from "./FilterComponent";
+// import DropdownMenu from "./DropdownMenu";
 import Item from "./Item";
 export default {
   name: "home",
   inject: ["theme"],
   components: {
-    FilterComponent,
-    DropdownMenu,
+    // FilterComponent,
+    // DropdownMenu,
     Item
   },
   data: () => ({

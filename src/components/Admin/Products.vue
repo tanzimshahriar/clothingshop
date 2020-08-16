@@ -199,7 +199,7 @@ export default {
         Authorization: this.$store.state.user.token
       };
       var payload = {
-        code: this.itemToDelete.code
+        id: this.itemToDelete._id
       };
       const url =
         process.env.NODE_ENV === "production"

@@ -36,10 +36,10 @@ export default {
     state.snackbar.timeout = 5000;
     state.snackbar.text = null;
   },
-  incrementItemQuantity(state, code) {
+  incrementItemQuantity(state, _id) {
     var items = state.user.cart.items;
     for (var i = 0; i < items.length; i++) {
-      if (items[i].code == code) {
+      if (items[i]._id == _id) {
         items[i].cartQuantity = items[i].cartQuantity + 1;
         // var price =
         //   items[i].sale && items[i].sale > 0
