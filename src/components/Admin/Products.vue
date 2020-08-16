@@ -1,16 +1,11 @@
 <template>
   <v-container grey lighten-4 class="px-0 py-0 mx-0 my-0" fill-height fluid>
-    <v-layout no-gutters row>
-      <v-flex col no-gutters>
-        <v-col no-gutters>
-          <v-col no-gutters align="center" class="px-0 py-0">
+    <v-layout row>
+      <v-flex col>
+        <v-col>
+          <v-col align="center" class="px-0 py-0">
             <FilterComponent v-if="!this.showProductPanel" />
-            <v-row
-              v-if="!showProductPanel"
-              justify="end"
-              class="pt-3"
-              no-gutters
-            >
+            <v-row v-if="!showProductPanel" justify="end" class="pt-3">
               <v-btn
                 @click="updateProducts"
                 class="mx-1"
@@ -78,7 +73,7 @@
                     </td>
                     <td v-if="item.sale">{{ item.sale }}%</td>
                     <td v-if="!item.sale">None</td>
-                    <td>10S,5M,0L</td>
+                    <td>{{ getAvailable(item.sizeAndQuantityAvailable) }}</td>
                     <td>{{ item.orders.length }}</td>
                     <td>
                       <v-row>
@@ -103,6 +98,13 @@
             >
           </v-col>
         </v-col>
+        <v-row justify="center" v-if="!loading && !showProductPanel">
+          <v-pagination
+            class="py-2"
+            v-model="currentPage"
+            :length="noOfPages"
+          ></v-pagination>
+        </v-row>
       </v-flex>
     </v-layout>
   </v-container>
@@ -129,7 +131,10 @@ export default {
     showDeleteDialog: false,
     itemToDelete: null,
     products: [],
-    noProducts: false
+    noProducts: false,
+    maxNoOfItems: 10,
+    noOfPages: 0,
+    currentPage: 1
   }),
   mounted() {
     this.updateProducts();
@@ -137,11 +142,18 @@ export default {
   methods: {
     updateProducts() {
       this.loading = true;
+      const params = new URLSearchParams();
+
+      //set pagination, number of items and page number
+      params.append("max", this.maxNoOfItems ? this.maxNoOfItems : 10);
+      params.append("page", this.currentPage ? this.currentPage : 1);
+
       this.$store
-        .dispatch("getProducts")
+        .dispatch("getProducts", params)
         .then(res => {
           this.loading = false;
           this.products = res.data.products;
+          this.noOfPages = res.data.noOfPages;
           res.data.products.length == 0
             ? (this.noProducts = true)
             : (this.noProducts = false);
@@ -224,6 +236,13 @@ export default {
       this.showProductPanel = false;
       this.currentProduct = {};
       this.productPanelType = "";
+    },
+    getAvailable(sAndQ) {
+      var quantity = 0;
+      sAndQ.forEach(value => {
+        quantity = quantity + value.quantityAvailable;
+      });
+      return quantity;
     }
   },
   computed: {
@@ -235,6 +254,11 @@ export default {
     },
     editName() {
       return this.edit ? "Save" : "Edit";
+    }
+  },
+  watch: {
+    currentPage: function() {
+      this.updateProducts();
     }
   }
 };

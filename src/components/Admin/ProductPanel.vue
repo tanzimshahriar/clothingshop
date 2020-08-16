@@ -465,7 +465,7 @@ export default {
               this.uploading = false;
               this.$emit("click");
               this.$store.commit("showSnackbar", payload);
-            }, 3000);
+            }, 4000);
           } else {
             const errorPayload = {
               text: "Failed to add item. Try Again.",

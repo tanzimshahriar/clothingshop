@@ -71,6 +71,7 @@
                   v-if="product.images && product.images.length >= 1"
                   class="align-end .d-flex"
                   aspect-ratio="1"
+                  contain
                   :src="productImg(product)"
                 >
                   <v-flex row>
@@ -117,6 +118,13 @@
             <Item v-if="showProduct" :item="product" @close="closeItem" />
           </v-col>
         </v-row>
+        <v-row justify="center" v-if="!loading">
+          <v-pagination
+            class="py-2"
+            v-model="currentPage"
+            :length="noOfPages"
+          ></v-pagination>
+        </v-row>
       </v-flex>
     </v-layout>
   </v-container>
@@ -140,7 +148,10 @@ export default {
     tempimg: null,
     product: {},
     showProduct: false,
-    loadingFailed: false
+    loadingFailed: false,
+    currentPage: 1,
+    noOfPages: 0,
+    maxNoOfItems: 10
   }),
   mounted() {
     this.updateProducts();
@@ -148,10 +159,17 @@ export default {
   methods: {
     //load the products on the home page
     updateProducts() {
+      this.loading = true;
+      const params = new URLSearchParams();
+
+      //set pagination, maxiumum no of items and the current page
+      params.append("max", this.maxNoOfItems ? this.maxNoOfItems : 10);
+      params.append("page", this.currentPage ? this.currentPage : 1);
       this.$store
-        .dispatch("getProducts")
+        .dispatch("getProducts", params)
         .then(res => {
           this.products = res.data.products;
+          this.noOfPages = res.data.noOfPages;
           this.loading = false;
           // this.getImageOfProduct(0);
         })
@@ -216,6 +234,11 @@ export default {
         default:
           return "250px";
       }
+    }
+  },
+  watch: {
+    currentPage: function() {
+      this.updateProducts();
     }
   }
 };

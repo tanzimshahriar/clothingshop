@@ -186,7 +186,7 @@
     </v-navigation-drawer>
 
     <v-main class="grey lighten-5">
-      <v-container class="px-0 py-0 px-0 py-0" fluid>
+      <v-container class="px-0 py-0 px-0 py-0" fill-height fluid>
         <router-view></router-view>
       </v-container>
       <Dialog

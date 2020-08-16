@@ -118,14 +118,15 @@ export default {
         });
     });
   },
-  getProducts() {
+  // eslint-disable-next-line no-unused-vars
+  getProducts(_context, params) {
     return new Promise((resolve, reject) => {
       const url =
         process.env.NODE_ENV === "production"
           ? process.env.VUE_APP_API_URL + "/getproducts"
           : "http://localhost:8080/getproducts";
       axios
-        .get(url)
+        .get(url, { params })
         .then(res => {
           resolve(res);
         })
