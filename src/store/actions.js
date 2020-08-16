@@ -118,41 +118,15 @@ export default {
         });
     });
   },
-  addProduct(context, data) {
-    return new Promise((resolve, reject) => {
-      const headers = {
-        "Content-Type": "multipart/form-data",
-        Authorization: context.state.user.token
-      };
-      const url =
-        process.env.NODE_ENV === "production"
-          ? process.env.VUE_APP_API_URL + "/addproduct"
-          : "http://localhost:8080/addproduct";
-      axios
-        .post(
-          url,
-          { data },
-          {
-            headers
-          }
-        )
-        .then(res => {
-          //returns the response to the addProduct action call
-          resolve(res);
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
-  },
-  getProducts() {
+  // eslint-disable-next-line no-unused-vars
+  getProducts(_context, params) {
     return new Promise((resolve, reject) => {
       const url =
         process.env.NODE_ENV === "production"
           ? process.env.VUE_APP_API_URL + "/getproducts"
           : "http://localhost:8080/getproducts";
       axios
-        .get(url)
+        .get(url, { params })
         .then(res => {
           resolve(res);
         })
@@ -190,7 +164,7 @@ export default {
           ? context.getters.cart.items.length
           : 0;
       for (var i = 0; i < numberOfItems; i++) {
-        if (item.code == context.getters.cart.items[i].code) {
+        if (item._id == context.getters.cart.items[i]._id) {
           existingItem = true;
           break;
         }
@@ -198,12 +172,12 @@ export default {
 
       //set the item to add to cart
       var cartItem = {};
-      cartItem.code = item.code;
+      cartItem._id = item._id;
       cartItem.name = item.name;
 
       if (existingItem) {
         //increment quantity of the item in cart and save to local storage
-        context.commit("incrementItemQuantity", item.code);
+        context.commit("incrementItemQuantity", item._id);
         context.commit("updateCartItemCookies");
       } else {
         //initialize cartQuantity so it can be used later
@@ -255,7 +229,7 @@ export default {
       var index = -1;
       var numberOfCartQuantity = -1;
       for (var i = 0; i < cart.items.length; i++) {
-        if (item.code == cart.items[i].code) {
+        if (item._id == cart.items[i]._id) {
           index = i;
           numberOfCartQuantity = cart.items[i].cartQuantity;
           break;
@@ -297,7 +271,7 @@ export default {
       var index = -1;
 
       for (var i = 0; i < cart.items.length; i++) {
-        if (item.code == cart.items[i].code) {
+        if (item._id == cart.items[i]._id) {
           index = i;
           break;
         }
@@ -366,6 +340,50 @@ export default {
             reject("Network Error. Failed to complete order.", err);
           });
       }
+    });
+  },
+  getSizes(context, size) {
+    return new Promise((resolve, reject) => {
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: context.state.user.token
+      };
+      const url =
+        process.env.NODE_ENV === "production"
+          ? process.env.VUE_APP_API_URL + "/getsizes"
+          : "http://localhost:8080/getsizes";
+      const params = new URLSearchParams();
+      size && size != "" ? params.append("_id", size) : null;
+      axios
+        .get(url, { params, headers })
+        .then(res => {
+          resolve(res);
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
+  },
+  getCategories(context, category) {
+    return new Promise((resolve, reject) => {
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: context.state.user.token
+      };
+      const url =
+        process.env.NODE_ENV === "production"
+          ? process.env.VUE_APP_API_URL + "/getcategories"
+          : "http://localhost:8080/getcategories";
+      const params = new URLSearchParams();
+      category && category != "" ? params.append("category", category) : null;
+      axios
+        .get(url, { params, headers })
+        .then(res => {
+          resolve(res);
+        })
+        .catch(err => {
+          reject(err);
+        });
     });
   }
 };

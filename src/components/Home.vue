@@ -1,10 +1,11 @@
 <template>
-  <v-container class="px-0 mx-0 py-0 my-0" fluid>
+  <v-container class="px-0 mx-0 py-0 my-0" fluid fill-height>
     <v-layout fill-height no-gutters>
-      <v-flex row no-gutters>
-        <v-row no-gutters class="mt-1">
-          <v-col no-gutters class="py-2 px-2" align="center">
-            <FilterComponent v-if="!showProduct" />
+      <v-flex fill-height row no-gutters>
+        <v-row no-gutters align-self="start">
+          <v-col no-gutters class="pb-2" align="center">
+            <!-- <DropdownMenu /> -->
+            <!-- <FilterComponent v-if="!showProduct" /> -->
 
             <v-card class="px-2 mx-8 my-8 py-3" v-if="loadingFailed">
               <v-card-title class="font-weight-light justify-center">
@@ -56,8 +57,8 @@
                   </v-sheet>
                 </v-card>
               </v-flex>
-
               <v-card
+                v-show="!loading"
                 class="mt-2 mb-2 ml-2 mr-2 .d-flex flex-column"
                 v-for="product in products"
                 v-bind:key="product.name"
@@ -70,12 +71,13 @@
                   v-if="product.images && product.images.length >= 1"
                   class="align-end .d-flex"
                   aspect-ratio="1"
+                  contain
                   :src="productImg(product)"
                 >
                   <v-flex row>
                     <v-spacer></v-spacer>
                     <v-btn
-                      class="mx-2 my-2 align-end"
+                      class="mx-2 my-2"
                       fab
                       light
                       small
@@ -114,6 +116,13 @@
               </v-card>
             </v-flex>
             <Item v-if="showProduct" :item="product" @close="closeItem" />
+            <v-row justify="center" align="end" v-if="!loading && !showProduct">
+          <v-pagination
+            class="py-2"
+            v-model="currentPage"
+            :length="noOfPages"
+          ></v-pagination>
+        </v-row>
           </v-col>
         </v-row>
       </v-flex>
@@ -122,13 +131,15 @@
 </template>
 
 <script>
-import FilterComponent from "./FilterComponent";
+// import FilterComponent from "./FilterComponent";
+// import DropdownMenu from "./DropdownMenu";
 import Item from "./Item";
 export default {
   name: "home",
   inject: ["theme"],
   components: {
-    FilterComponent,
+    // FilterComponent,
+    // DropdownMenu,
     Item
   },
   data: () => ({
@@ -137,7 +148,10 @@ export default {
     tempimg: null,
     product: {},
     showProduct: false,
-    loadingFailed: false
+    loadingFailed: false,
+    currentPage: 1,
+    noOfPages: 0,
+    maxNoOfItems: 10
   }),
   mounted() {
     this.updateProducts();
@@ -145,10 +159,17 @@ export default {
   methods: {
     //load the products on the home page
     updateProducts() {
+      this.loading = true;
+      const params = new URLSearchParams();
+
+      //set pagination, maxiumum no of items and the current page
+      params.append("max", this.maxNoOfItems ? this.maxNoOfItems : 10);
+      params.append("page", this.currentPage ? this.currentPage : 1);
       this.$store
-        .dispatch("getProducts")
+        .dispatch("getProducts", params)
         .then(res => {
           this.products = res.data.products;
+          this.noOfPages = res.data.noOfPages;
           this.loading = false;
           // this.getImageOfProduct(0);
         })
@@ -213,6 +234,11 @@ export default {
         default:
           return "250px";
       }
+    }
+  },
+  watch: {
+    currentPage: function() {
+      this.updateProducts();
     }
   }
 };

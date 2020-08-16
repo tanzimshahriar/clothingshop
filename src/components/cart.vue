@@ -32,6 +32,7 @@
                     <v-img
                       class="mx-2 my-2"
                       aspect-ratio="1"
+                      contain
                       :src="returnImage(item)"
                     ></v-img>
                   </v-col>
@@ -243,7 +244,6 @@ export default {
 
         //if the cart is not empty
         if (this.cart && this.cart.items && this.cart.items.length != 0) {
-          console.log("Cart is not empty");
           this.cartIsEmpty = false;
 
           //for each item in cart
@@ -255,7 +255,7 @@ export default {
                 ? process.env.VUE_APP_API_URL + "/getproducts"
                 : "http://localhost:8080/getproducts";
             const params = new URLSearchParams();
-            params.append("code", item.code);
+            params.append("id", item._id);
             axios
               .get(url, { params })
               .then(res => {

@@ -84,7 +84,10 @@ export default {
         "Content-Type": "application/json",
         Authorization: this.$store.state.user.token
       };
-      const url = "https://server-261022.appspot.com/getorders";
+      const url =
+        process.env.NODE_ENV === "production"
+          ? process.env.VUE_APP_API_URL + "/getorders"
+          : "http://localhost:8080/getorders";
       axios
         .get(url, { headers })
         .then(res => {

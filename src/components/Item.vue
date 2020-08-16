@@ -58,7 +58,7 @@
             >Add to Cart</v-btn
           >
           <v-btn
-            class="align-end ml-4"
+            class="ml-4"
             fab
             light
             x-small

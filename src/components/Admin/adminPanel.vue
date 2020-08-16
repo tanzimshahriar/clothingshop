@@ -1,5 +1,5 @@
 <template>
-  <v-container class="fill-height" fill-height fluid>
+  <v-container fill-height fluid>
     <v-layout column>
       <v-flex xs12 align-start>
         <Title title="Orders"></Title>

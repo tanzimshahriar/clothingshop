@@ -1,16 +1,11 @@
 <template>
   <v-container grey lighten-4 class="px-0 py-0 mx-0 my-0" fill-height fluid>
-    <v-layout no-gutters row>
-      <v-flex col no-gutters>
-        <v-col no-gutters>
-          <v-col no-gutters align="center" class="px-0 py-0">
+    <v-layout row>
+      <v-flex col>
+        <v-col>
+          <v-col align="center" class="px-0 py-0">
             <FilterComponent v-if="!this.showProductPanel" />
-            <v-row
-              v-if="!showProductPanel"
-              justify="end"
-              class="pt-3"
-              no-gutters
-            >
+            <v-row v-if="!showProductPanel" justify="end" class="pt-3">
               <v-btn
                 @click="updateProducts"
                 class="mx-1"
@@ -60,7 +55,7 @@
                     <th class="text-left">Name</th>
                     <th class="text-left">Price</th>
                     <th class="text-left">Sale</th>
-                    <th class="text-left">Quantity</th>
+                    <th class="text-left">Available</th>
                     <th class="text-left">Orders</th>
                     <th v-if="edit" class="text-left">Actions</th>
                   </tr>
@@ -78,8 +73,8 @@
                     </td>
                     <td v-if="item.sale">{{ item.sale }}%</td>
                     <td v-if="!item.sale">None</td>
-                    <td>10S,5M,0L</td>
-                    <td>{{ item.orders }}</td>
+                    <td>{{ getAvailable(item.sizeAndQuantityAvailable) }}</td>
+                    <td>{{ item.orders.length }}</td>
                     <td>
                       <v-row>
                         <v-btn
@@ -103,6 +98,13 @@
             >
           </v-col>
         </v-col>
+        <v-row justify="center" v-if="!loading && !showProductPanel">
+          <v-pagination
+            class="py-2"
+            v-model="currentPage"
+            :length="noOfPages"
+          ></v-pagination>
+        </v-row>
       </v-flex>
     </v-layout>
   </v-container>
@@ -129,7 +131,10 @@ export default {
     showDeleteDialog: false,
     itemToDelete: null,
     products: [],
-    noProducts: false
+    noProducts: false,
+    maxNoOfItems: 10,
+    noOfPages: 0,
+    currentPage: 1
   }),
   mounted() {
     this.updateProducts();
@@ -137,11 +142,18 @@ export default {
   methods: {
     updateProducts() {
       this.loading = true;
+      const params = new URLSearchParams();
+
+      //set pagination, number of items and page number
+      params.append("max", this.maxNoOfItems ? this.maxNoOfItems : 10);
+      params.append("page", this.currentPage ? this.currentPage : 1);
+
       this.$store
-        .dispatch("getProducts")
+        .dispatch("getProducts", params)
         .then(res => {
           this.loading = false;
           this.products = res.data.products;
+          this.noOfPages = res.data.noOfPages;
           res.data.products.length == 0
             ? (this.noProducts = true)
             : (this.noProducts = false);
@@ -158,30 +170,17 @@ export default {
       this.currentProduct = {
         name: "",
         code: "",
+        price: 0,
+        sale: 0,
         description: "",
-        quantity: [
-          {
-            size: "xxl",
-            number: null
-          },
-          {
-            size: "xl",
-            number: null
-          },
-          {
-            size: "l",
-            number: null
-          },
-          {
-            size: "m",
-            number: null
-          },
-          {
-            size: "s",
-            number: null
-          }
-        ],
-        images: []
+        sizeAndQuantityAvailable: [],
+        images: [],
+        gender: {
+          male: true,
+          female: true
+        },
+        // orders: [],
+        categories: []
       };
       this.openProductPanel(this.currentProduct);
     },
@@ -200,9 +199,12 @@ export default {
         Authorization: this.$store.state.user.token
       };
       var payload = {
-        code: this.itemToDelete.code
+        id: this.itemToDelete._id
       };
-      const url = "https://server-261022.appspot.com/deleteproduct";
+      const url =
+        process.env.NODE_ENV === "production"
+          ? process.env.VUE_APP_API_URL + "/deleteproduct"
+          : "http://localhost:8080/deleteproduct";
       axios
         .post(url, payload, { headers })
         .then(res => {
@@ -234,6 +236,13 @@ export default {
       this.showProductPanel = false;
       this.currentProduct = {};
       this.productPanelType = "";
+    },
+    getAvailable(sAndQ) {
+      var quantity = 0;
+      sAndQ.forEach(value => {
+        quantity = quantity + value.quantityAvailable;
+      });
+      return quantity;
     }
   },
   computed: {
@@ -245,6 +254,11 @@ export default {
     },
     editName() {
       return this.edit ? "Save" : "Edit";
+    }
+  },
+  watch: {
+    currentPage: function() {
+      this.updateProducts();
     }
   }
 };

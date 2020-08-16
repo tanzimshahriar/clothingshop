@@ -32,18 +32,30 @@
           >
           <v-spacer></v-spacer>
           <v-layout row align-center>
-            <v-btn v-for="icon in icons" :key="icon" class="mx-4" dark icon>
-              <v-icon size="24px">{{ icon }}</v-icon>
-            </v-btn>
+            <v-card-subtitle
+              class="mx-4 my-0 py-0 px-0"
+              v-for="(icon, i) in icons"
+              :key="i"
+            >
+              <v-btn :href="icon.link" target="_blank" dark icon>
+                <v-icon size="24px">{{ icon.icon }}</v-icon>
+              </v-btn>
+            </v-card-subtitle>
           </v-layout>
         </v-layout>
         <v-layout align-center justify-center row class="hidden-xs-only">
           <strong class="subheading"
             >Get connected with us on social networks!</strong
           >
-          <v-btn v-for="icon in icons" :key="icon" class="mx-4" dark icon>
-            <v-icon size="24px">{{ icon }}</v-icon>
-          </v-btn>
+          <v-card-subtitle
+            v-for="(icon, i) in icons"
+            :key="i"
+            class="mx-4 my-0 py-0 px-0"
+          >
+            <v-btn :href="icon.link" target="_blank" dark icon>
+              <v-icon size="24px">{{ icon.icon }}</v-icon>
+            </v-btn>
+          </v-card-subtitle>
         </v-layout>
         <v-layout align-center justify-end row>
           <v-btn x-small @click="showPrivacy" text class="mr-3">Privacy</v-btn>
@@ -67,7 +79,11 @@ export default {
     Dialog
   },
   data: () => ({
-    icons: ["mdi-facebook", "mdi-twitter", "mdi-google-plus", "mdi-instagram"],
+    icons: [
+      { icon: "mdi-facebook", link: process.env.VUE_APP_FB_LINK },
+      { icon: "mdi-twitter", link: process.env.VUE_APP_TWITTER_LINK },
+      { icon: "mdi-instagram", link: process.env.VUE_APP_INSTAGRAM_LINK }
+    ],
     privacy: false,
     tAndC: false,
     contactUs: false
@@ -85,6 +101,7 @@ export default {
     showPrivacy() {
       this.privacy = true;
     },
+
     showTAndC() {
       this.tAndC = true;
     },
