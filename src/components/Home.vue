@@ -1,8 +1,8 @@
 <template>
-  <v-container class="px-0 mx-0 py-0 my-0" fluid>
+  <v-container class="px-0 mx-0 py-0 my-0" fluid fill-height>
     <v-layout fill-height no-gutters>
-      <v-flex row no-gutters>
-        <v-row no-gutters>
+      <v-flex fill-height row no-gutters>
+        <v-row no-gutters align-self="start">
           <v-col no-gutters class="pb-2" align="center">
             <DropdownMenu />
             <FilterComponent v-if="!showProduct" />
@@ -57,8 +57,8 @@
                   </v-sheet>
                 </v-card>
               </v-flex>
-
               <v-card
+                v-show="!loading"
                 class="mt-2 mb-2 ml-2 mr-2 .d-flex flex-column"
                 v-for="product in products"
                 v-bind:key="product.name"
@@ -116,14 +116,14 @@
               </v-card>
             </v-flex>
             <Item v-if="showProduct" :item="product" @close="closeItem" />
-          </v-col>
-        </v-row>
-        <v-row justify="center" v-if="!loading">
+            <v-row justify="center" align="end" v-if="!loading">
           <v-pagination
             class="py-2"
             v-model="currentPage"
             :length="noOfPages"
           ></v-pagination>
+        </v-row>
+          </v-col>
         </v-row>
       </v-flex>
     </v-layout>
