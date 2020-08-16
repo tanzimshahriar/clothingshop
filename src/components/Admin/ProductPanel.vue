@@ -1,5 +1,8 @@
 <template>
   <v-card class="px-0 py-0 mx-0 my-0">
+    <v-overlay :value="uploading">
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
     <v-layout
       no-gutters
       fill-height
@@ -234,10 +237,13 @@
         </v-card>
         <v-card-actions class="mt-0 px-0 mb-6">
           <v-spacer></v-spacer>
-          <v-btn @click="cancel">Cancel</v-btn>
-          <v-btn color="primary" @click="submitBtnClicked">{{
-            btnLabel
-          }}</v-btn>
+          <v-btn :disabled="uploading" @click="cancel">Cancel</v-btn>
+          <v-btn
+            :disabled="uploading"
+            color="primary"
+            @click="submitBtnClicked"
+            >{{ btnLabel }}</v-btn
+          >
         </v-card-actions>
       </v-flex>
     </v-layout>
@@ -401,7 +407,7 @@ export default {
       }
       this.item.images.splice(index, 1);
     },
-    async makeApiRequestForSaveProduct() {
+    makeApiRequestForSaveProduct() {
       const item = this.item;
       const data = new FormData();
       const deletedOldImages = this.deletedOldImages;
@@ -435,11 +441,6 @@ export default {
         image.contentType ? null : data.append("images", image);
       });
 
-      for (var pair of data.entries()) {
-        console.log(pair[0]);
-        console.log(pair[1]);
-      }
-
       const headers = {
         Authorization: this.$store.state.user.token
       };
@@ -447,11 +448,11 @@ export default {
         process.env.NODE_ENV === "production"
           ? process.env.VUE_APP_API_URL + "/addproduct"
           : "http://localhost:8080/addproduct";
-      await axios
+      axios
         .post(url, data, {
           headers
         })
-        .then(res => {
+        .then(async res => {
           let payload = {
             text:
               this.type == "add"
@@ -460,14 +461,16 @@ export default {
             timeout: 5000
           };
           if (res.data.result == "success" && res.status == 200) {
-            this.$store.commit("showSnackbar", payload);
-            this.$emit("click");
+            setTimeout(() => {
+              this.uploading = false;
+              this.$emit("click");
+              this.$store.commit("showSnackbar", payload);
+            }, 3000);
           } else {
             const errorPayload = {
               text: "Failed to add item. Try Again.",
               timeout: 5000
             };
-
             this.$store.commit("showSnackbar", errorPayload);
           }
         })
@@ -481,9 +484,8 @@ export default {
         });
     },
     saveProduct() {
+      this.uploading = true;
       this.makeApiRequestForSaveProduct();
-      this.$emit("click", this.item);
-      //reload table
     },
     //when a file or multiple files are updloaded, add it to this.items.images but no color is selected for all images
     onFileSelected(e) {
